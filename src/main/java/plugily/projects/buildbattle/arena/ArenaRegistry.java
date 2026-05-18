@@ -87,7 +87,7 @@ public class ArenaRegistry extends PluginArenaRegistry {
         boolean isGuessArena = arena instanceof GuessArena;
         String arenaPath = id + ".";
 
-        if (!plugin.getMyWorldsManager().validateArenaWorld(
+        if (!plugin.getMyWorldsManager().requireConfiguredArenaWorld(
                 plugin.getMyWorldsManager().getWorldName(section.getString(arenaPath + "lobbylocation")),
                 "Lobby location", (BaseArena) arena))
         {
@@ -96,7 +96,7 @@ public class ArenaRegistry extends PluginArenaRegistry {
 
         }
 
-        if (!plugin.getMyWorldsManager().validateArenaWorld(
+        if (!plugin.getMyWorldsManager().requireConfiguredArenaWorld(
                 plugin.getMyWorldsManager().getWorldName(section.getString(arenaPath + "startlocation")),
                 "Start location", (BaseArena) arena))
         {
@@ -105,7 +105,7 @@ public class ArenaRegistry extends PluginArenaRegistry {
 
         }
 
-        if (!plugin.getMyWorldsManager().validateArenaWorld(
+        if (!plugin.getMyWorldsManager().requireConfiguredArenaWorld(
                 plugin.getMyWorldsManager().getWorldName(section.getString(arenaPath + "endlocation")), "End location",
                 (BaseArena) arena))
         {

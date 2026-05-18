@@ -114,6 +114,27 @@ public class MyWorldsManager {
 
     }
 
+    /**
+     * Stricter variant of {@link #validateArenaWorld} for required arena locations.
+     * Blank/missing world names are rejected so players are never stranded inside
+     * the arena world after a match ends.
+     */
+    public boolean requireConfiguredArenaWorld(@Nullable String worldName, String label, @Nullable BaseArena arena) {
+
+        if (worldName == null || worldName.isBlank()) {
+
+            plugin.getDebugger()
+                    .sendConsoleMsg(new MessageBuilder("VALIDATOR_INVALID_ARENA_CONFIGURATION").asKey().value(label
+                            + " is not configured. Set it to a dedicated MyWorlds lobby/game world via the setup GUI.")
+                            .arena(arena).build());
+            return false;
+
+        }
+
+        return validateArenaWorld(worldName, label, arena);
+
+    }
+
     public boolean isProtectedWorld(@Nullable World world) {
 
         return world != null && isProtectedWorld(world.getName());
