@@ -4,7 +4,6 @@ Plugin:
     Long: buildbattle
   Id:
     Spigot: 44703
-    BStats: 2491
   Compatibility:
     Spigot:
       - "1.8"

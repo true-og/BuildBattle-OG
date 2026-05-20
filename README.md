@@ -7,7 +7,7 @@ BuildBattle-OG / Guess The Build is a Minecraft minigame designed for small and 
 
 ## OG fork notes
 
-This fork has no outbound phone-home. Upstream Plugily service hooks (`api.plugily.xyz` ping, remote locale fetching, automatic error reporting) and the Spiget-backed update checker are stubbed out at build time via local class overrides. Bundled `Default` locale is always used; update notifications are disabled. bStats metrics are untouched. See [CHANGELOG.md](CHANGELOG.md) for details.
+This fork avoids outside service calls for updates, translations, and error reports. It uses the bundled `Default` locale and adds `/hub` plus reconnect support so players can get back to the main world from arenas more reliably. See [CHANGELOG.md](CHANGELOG.md) for details.
 
 There are different modes such as the classic BuildBattle-OG and the guess mode called Guess The Build. On the classic version the goal is to build the best you can on your own as solo or as team with unlimited team sizes! You must compete with other players in this building game. Who will be the best? On the guess mode you have to build whileas the other players are guessing the correct word according to your building which grants points to the players. The player with the most points (best guesses) wins. 
 Have fun using it! Leave a good rating if you really like it.
@@ -26,7 +26,6 @@ Have fun using it! Leave a good rating if you really like it.
 | [InventoryFramework](https://github.com/stefvanschie/IF/)   | [stefvanschie](https://github.com/stefvanschie)       | [Unlicense](https://github.com/stefvanschie/IF/blob/master/LICENSE)                |
 | [ScoreboardLib](https://github.com/TigerHix/ScoreboardLib/) | [TigerHix](https://github.com/TigerHix)               | [LGPLv3](https://github.com/TigerHix/ScoreboardLib/blob/master/LICENSE)            |
 | [HikariCP](https://github.com/brettwooldridge/HikariCP)     | [brettwooldridge](https://github.com/brettwooldridge) | [Apache License 2.0](https://github.com/brettwooldridge/HikariCP/blob/dev/LICENSE) |
-| [bStats](https://github.com/Bastian/bStats-Metrics)         | [Bastian](https://github.com/Bastian)                 | [LGPLv3](https://github.com/Bastian/bStats-Metrics/blob/master/LICENSE)            |
 | [Commons Box](https://github.com/Plajer/Commons-Box)        | [Plajer](https://github.com/Plajer)                   | [GPLv3](https://github.com/Plajer/Commons-Box/blob/master/LICENSE.md)              |
 
 ## Open Source Licenses
@@ -50,4 +49,3 @@ Thanks to Minecraft Heads to let us use the Name and Textures of the heads to pr
 </a>
 
 <img align="right" src="https://i.imgur.com/EmFfDXN.png">
-

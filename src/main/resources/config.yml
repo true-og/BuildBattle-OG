@@ -50,6 +50,7 @@ Commands:
   Whitelist:
     - me
     - help
+    - hub
   # Enable and Disable predefined shortened commands or add your own
   Shorter:
     '1':

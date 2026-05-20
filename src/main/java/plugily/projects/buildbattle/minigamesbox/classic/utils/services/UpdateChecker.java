@@ -9,17 +9,9 @@ public final class UpdateChecker {
     public static final VersionScheme VERSION_SCHEME_DECIMAL = (first, second) -> null;
 
     private static UpdateChecker instance;
-
-    private final JavaPlugin plugin;
-    private final int pluginID;
-    private final VersionScheme versionScheme;
     private UpdateResult lastResult;
 
-    private UpdateChecker(JavaPlugin plugin, int pluginID, VersionScheme versionScheme) {
-
-        this.plugin = plugin;
-        this.pluginID = pluginID;
-        this.versionScheme = versionScheme;
+    private UpdateChecker() {
 
     }
 
@@ -27,7 +19,7 @@ public final class UpdateChecker {
 
         if (instance == null) {
 
-            instance = new UpdateChecker(plugin, pluginID, scheme);
+            instance = new UpdateChecker();
 
         }
 
@@ -55,9 +47,8 @@ public final class UpdateChecker {
 
     public CompletableFuture<UpdateResult> requestUpdateCheck() {
 
-        UpdateResult result = new UpdateResult(UpdateReason.UP_TO_DATE, plugin.getDescription().getVersion());
-        this.lastResult = result;
-        return CompletableFuture.completedFuture(result);
+        lastResult = new UpdateResult(UpdateReason.UP_TO_DATE, "");
+        return CompletableFuture.completedFuture(lastResult);
 
     }
 
@@ -98,7 +89,7 @@ public final class UpdateChecker {
 
         public boolean requiresUpdate() {
 
-            return reason == UpdateReason.NEW_UPDATE;
+            return false;
 
         }
 

@@ -461,9 +461,9 @@ Signs:
   Created: "%plugin_prefix% Sign created successfully!"
   Removed: "%plugin_prefix% Sign successfully removed!"
   Lines:
-    - "%plugin_prefix%"
-    - "%arena_state_placeholder%"
+    - "&4BuildBattle-OG"
     - "%arena_name%"
+    - "%arena_state_placeholder%"
     - "[%arena_players_size%/%arena_max_players%]"
 
 

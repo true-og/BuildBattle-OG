@@ -14,6 +14,8 @@ commands:
     description: BuildBattle-OG Admin Commands
     usage: "§6Correct usage: /bba [option]"
     aliases: [ bba, buildbadmin ]
+  hub:
+    description: Leave the BuildBattle lobby or game and return to the main world.
 
 permissions:
   buildbattle.admin.*:

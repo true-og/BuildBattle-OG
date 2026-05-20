@@ -27,7 +27,7 @@ java {
 /* ----------------------------- Metadata ------------------------------ */
 group = "plugily.projects"
 
-version = "5.1.3"
+version = "5.1.4"
 
 description = "BuildBattle-OG" // Declare plugin version (will be in .jar).
 
@@ -78,6 +78,10 @@ tasks.shadowJar {
     exclude("plugily/projects/minigamesbox/classic/utils/services/locale/LocaleService.class")
     exclude("plugily/projects/minigamesbox/classic/utils/services/locale/LocaleService$*.class")
     exclude("plugily/projects/minigamesbox/classic/utils/services/ServiceRegistry.class")
+    exclude("plugily/projects/minigamesbox/classic/utils/services/metrics/Metrics.class")
+    exclude("plugily/projects/minigamesbox/classic/utils/services/metrics/Metrics$*.class")
+    exclude("plugily/projects/minigamesbox/classic/utils/services/metrics/MetricsService.class")
+    exclude("plugily/projects/minigamesbox/classic/utils/services/metrics/MetricsService$*.class")
     exclude("plugily/projects/minigamesbox/classic/utils/services/UpdateChecker.class")
     exclude("plugily/projects/minigamesbox/classic/utils/services/UpdateChecker$*.class")
     isEnableRelocation = true

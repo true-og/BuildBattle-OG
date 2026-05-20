@@ -20,6 +20,7 @@
 
 package plugily.projects.buildbattle.arena;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import plugily.projects.buildbattle.Main;
@@ -28,6 +29,7 @@ import plugily.projects.minigamesbox.api.arena.IArenaState;
 import plugily.projects.minigamesbox.api.arena.IPluginArena;
 import plugily.projects.minigamesbox.api.user.IUser;
 import plugily.projects.minigamesbox.classic.arena.PluginArenaManager;
+import plugily.projects.minigamesbox.classic.utils.version.VersionUtils;
 
 import java.util.List;
 
@@ -135,6 +137,98 @@ public class ArenaManager extends PluginArenaManager {
             }
 
         }
+
+    }
+
+    public void hubLeaveAttempt(@NotNull Player player, @NotNull BaseArena pluginArena) {
+
+        plugin.getDebugger().debug("[{0}] Hub leave attempt for {1}", pluginArena.getId(), player.getName());
+
+        IUser user = plugin.getUserManager().getUser(player);
+        if (user != null) {
+
+            plugin.getUserManager().saveAllStatistic(user);
+            user.setStatistic("LOCAL_POINTS", 0);
+            user.setStatistic("LOCAL_POINTS_GTB", 0);
+            user.setSpectator(false);
+            user.setPermanentSpectator(false);
+            pluginArena.getScoreboardManager().removeScoreboard(user);
+
+        }
+
+        restoreVisibility(player);
+        player.closeInventory();
+        pluginArena.removeSpectatorPlayer(player);
+        pluginArena.getBossbarManager().doBarAction(IPluginArena.IBarAction.REMOVE, player);
+        pluginArena.getPlayers().remove(player);
+        plugin.getActionBarManager().clearActionBarsFromPlayer(player);
+        removePlotMembership(player, pluginArena);
+
+        if (shouldStopAfterHubLeave(pluginArena)) {
+
+            stopGame(true, pluginArena);
+
+        }
+
+        plugin.getSignManager().updateSigns();
+        plugin.getDebugger().debug("[{0}] Hub leave complete for {1}", pluginArena.getId(), player.getName());
+
+    }
+
+    private void restoreVisibility(Player player) {
+
+        for (Player online : Bukkit.getOnlinePlayers()) {
+
+            VersionUtils.showPlayer(plugin, player, online);
+            if (plugin.getArenaRegistry().getArena(online) == null) {
+
+                VersionUtils.showPlayer(plugin, online, player);
+
+            }
+
+        }
+
+    }
+
+    private void removePlotMembership(Player player, BaseArena pluginArena) {
+
+        Plot plot = pluginArena.getPlotManager().getPlot(player);
+        pluginArena.getPlotList().remove(player);
+        if (plot == null) {
+
+            return;
+
+        }
+
+        plot.removeMember(player);
+        if (pluginArena instanceof BuildArena && plot.getMembers().isEmpty()) {
+
+            ((BuildArena) pluginArena).getQueue().remove(plot);
+
+        }
+
+        if (pluginArena instanceof GuessArena) {
+
+            GuessArena guessArena = (GuessArena) pluginArena;
+            guessArena.getWhoGuessed().remove(player);
+            boolean currentBuilder = guessArena.getCurrentBuilders().remove(player);
+            if (currentBuilder && plot.getMembers().isEmpty() && pluginArena.getArenaState() == IArenaState.IN_GAME) {
+
+                pluginArena.setTimer(plugin.getConfig()
+                        .getInt("Time-Manager." + pluginArena.getArenaType().getPrefix() + ".Round-Delay"), true);
+                pluginArena.setArenaInGameState(BaseArena.ArenaInGameState.PLOT_VOTING);
+
+            }
+
+        }
+
+    }
+
+    private boolean shouldStopAfterHubLeave(BaseArena pluginArena) {
+
+        IArenaState state = pluginArena.getArenaState();
+        return pluginArena.getPlayers().isEmpty() && state != IArenaState.FULL_GAME
+                && state != IArenaState.WAITING_FOR_PLAYERS && state != IArenaState.STARTING;
 
     }
 

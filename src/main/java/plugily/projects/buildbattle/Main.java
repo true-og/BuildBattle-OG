@@ -31,18 +31,19 @@ import plugily.projects.buildbattle.arena.vote.VoteItems;
 import plugily.projects.buildbattle.boot.AdditionalValueInitializer;
 import plugily.projects.buildbattle.boot.MessageInitializer;
 import plugily.projects.buildbattle.boot.PlaceholderInitializer;
+import plugily.projects.buildbattle.commands.HubCommand;
 import plugily.projects.buildbattle.commands.arguments.ArgumentsRegistry;
 import plugily.projects.buildbattle.handlers.LanguageMigrator;
 import plugily.projects.buildbattle.handlers.menu.OptionsRegistry;
 import plugily.projects.buildbattle.handlers.misc.BlacklistManager;
 import plugily.projects.buildbattle.handlers.misc.HeadDatabaseManager;
 import plugily.projects.buildbattle.handlers.misc.MyWorldsManager;
+import plugily.projects.buildbattle.handlers.misc.ReconnectToMainWorldListener;
 import plugily.projects.buildbattle.handlers.setup.SetupCategoryManager;
 import plugily.projects.buildbattle.handlers.themes.ThemeManager;
 import plugily.projects.minigamesbox.classic.PluginMain;
 import plugily.projects.minigamesbox.classic.handlers.setup.SetupInventory;
 import plugily.projects.minigamesbox.classic.handlers.setup.categories.PluginSetupCategoryManager;
-import plugily.projects.minigamesbox.classic.utils.services.metrics.Metrics;
 
 /**
  * Created by Tom on 17/08/2015. Updated by Tigerpanzer_02 on 03.12.2021
@@ -103,6 +104,8 @@ public class Main extends PluginMain {
         new ArenaEvents(this);
         arenaManager = new ArenaManager(this);
         arenaRegistry.registerArenas();
+        new ReconnectToMainWorldListener(this);
+        getCommand("hub").setExecutor(new HubCommand(this));
         myWorldsManager.synchronizeArenaWorldInventories();
         getSignManager().loadSigns();
         getSignManager().updateSigns();
@@ -112,23 +115,6 @@ public class Main extends PluginMain {
         plotMenuHandler = new PlotMenuHandler(this);
         optionsRegistry = new OptionsRegistry(this);
         optionsRegistry.registerOptions();
-        addPluginMetrics();
-
-    }
-
-    private void addPluginMetrics() {
-
-        getMetrics().addCustomChart(new Metrics.SimplePie("hooked_addons", () -> {
-
-            if (getServer().getPluginManager().getPlugin("BuildBattle-Extras") != null) {
-
-                return "Extras";
-
-            }
-
-            return "None";
-
-        }));
 
     }
 
