@@ -502,18 +502,18 @@ Validator:
 Placeholders:
   Game-States:
     Waiting: "&lWaiting for players..."
-    Starting: "&e&lStarting"
+    Starting: "&6&lStarting"
     Full-Game: "&4&lFULL"
     In-Game: "&lIn-game"
     Ending: "&lEnding"
-    Restarting: "&c&lRestarting"
+    Restarting: "&4&lRestarting"
   Motd:
     Waiting: "&lYou can join this game..."
-    Starting: "&e&lStarting"
+    Starting: "&6&lStarting"
     Full-Game: "&4&lFULL | Use another Server"
     In-Game: "&lIn-game | Click to spectate"
     Ending: "&lEnding | Server is closing"
-    Restarting: "&c&lRestarting"
+    Restarting: "&4&lRestarting"
 
 
 #

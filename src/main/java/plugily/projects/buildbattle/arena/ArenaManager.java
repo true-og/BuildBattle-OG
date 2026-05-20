@@ -50,6 +50,19 @@ public class ArenaManager extends PluginArenaManager {
     }
 
     @Override
+    public void joinAttempt(@NotNull Player player, @NotNull IPluginArena arena) {
+
+        if (!plugin.getArenaRegistry().isInArena(player)) {
+
+            plugin.savePreJoinLocation(player);
+
+        }
+
+        super.joinAttempt(player, arena);
+
+    }
+
+    @Override
     public void additionalPartyJoin(Player player, IPluginArena arena, Player partyLeader) {
 
         BaseArena pluginArena = plugin.getArenaRegistry().getArena(arena.getId());

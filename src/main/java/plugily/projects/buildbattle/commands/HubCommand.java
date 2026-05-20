@@ -33,18 +33,39 @@ public class HubCommand implements CommandExecutor {
 
         }
 
+        BaseArena arena = plugin.getArenaRegistry().getArena(player);
+        if (arena != null) {
+
+            plugin.getArenaManager().hubLeaveAttempt(player, arena);
+
+        }
+
+        Location savedLoc = plugin.getAndRemovePreJoinLocation(player.getUniqueId());
+        if (savedLoc != null && savedLoc.getWorld() != null) {
+
+            if (!player.teleport(savedLoc)) {
+
+                send(player, "&cUnable to return you to your previous location.");
+                return true;
+
+            }
+
+            if (arena != null) {
+
+                InventorySerializer.loadInventory(plugin, player);
+
+            }
+
+            send(player, "&aReturned to your previous location.");
+            return true;
+
+        }
+
         World mainWorld = findMainWorld();
         if (mainWorld == null) {
 
             send(player, "&cNo main world is available.");
             return true;
-
-        }
-
-        BaseArena arena = plugin.getArenaRegistry().getArena(player);
-        if (arena != null) {
-
-            plugin.getArenaManager().hubLeaveAttempt(player, arena);
 
         }
 

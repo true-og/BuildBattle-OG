@@ -20,6 +20,10 @@
 
 package plugily.projects.buildbattle;
 
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.TestOnly;
 import plugily.projects.buildbattle.arena.ArenaEvents;
 import plugily.projects.buildbattle.arena.ArenaManager;
@@ -49,6 +53,8 @@ import plugily.projects.minigamesbox.classic.handlers.setup.categories.PluginSet
  * Created by Tom on 17/08/2015. Updated by Tigerpanzer_02 on 03.12.2021
  */
 public class Main extends PluginMain {
+
+    private final ConcurrentHashMap<UUID, Location> preJoinLocations = new ConcurrentHashMap<>();
 
     private VoteItems voteItems;
     private HeadDatabaseManager headDatabaseManager;
@@ -157,6 +163,18 @@ public class Main extends PluginMain {
     public MyWorldsManager getMyWorldsManager() {
 
         return myWorldsManager;
+
+    }
+
+    public void savePreJoinLocation(Player player) {
+
+        preJoinLocations.put(player.getUniqueId(), player.getLocation().clone());
+
+    }
+
+    public Location getAndRemovePreJoinLocation(UUID playerId) {
+
+        return preJoinLocations.remove(playerId);
 
     }
 

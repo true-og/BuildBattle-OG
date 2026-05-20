@@ -1,6 +1,7 @@
 package plugily.projects.buildbattle.handlers.misc;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -64,6 +65,14 @@ public class ReconnectToMainWorldListener implements Listener {
             if (arena != null) {
 
                 plugin.getArenaManager().hubLeaveAttempt(player, arena);
+
+            }
+
+            Location savedLoc = plugin.getAndRemovePreJoinLocation(player.getUniqueId());
+            if (savedLoc != null && savedLoc.getWorld() != null) {
+
+                player.teleport(savedLoc);
+                return;
 
             }
 
