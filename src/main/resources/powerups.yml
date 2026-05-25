@@ -1,0 +1,37 @@
+## Plugily Projects powerups.yml
+# Example
+Powerups:
+  Pickup:
+    Chat: "&a%player% picked the &4Powerup %value% up"
+  Ended:
+    Title: "5,20,5;&4Powerup %value% from %player%;&chas ended"
+    Chat: "&4Powerup %value% from %player% has ended%"
+  Drop:
+    Chance: 1
+  Content:
+    Heal:
+      active: false
+      name: "Healing"
+      description: "Let player heal"
+      material: REDSTONE
+      # Format: PotionName, Duration, Amplifier
+      potion-effect:
+        - "REGENERATION, 30, 10"
+      # PLAYER for pickup player | ALL for all arena players
+      potion-type: PLAYER
+      execute:
+        - ""
+    Speed:
+      active: true
+      name: "&a&lSPEED BOOSTER"
+      description: "&7Double speed for %number% seconds!"
+      material: FEATHER
+      potion-effect:
+        - "SPEED, 15, 1"
+      potion-type: PLAYER
+      execute:
+        - ""
+
+Do-Not-Edit:
+  File-Version: 1
+  Core-Version: 1148-
