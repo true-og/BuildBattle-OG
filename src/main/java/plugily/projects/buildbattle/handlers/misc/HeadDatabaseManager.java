@@ -69,11 +69,11 @@ public class HeadDatabaseManager {
 
         } else if (status == DownloadStatus.SUCCESS) {
 
-            plugin.getDebugger().debug(Level.WARNING, "&aDownloaded heads " + name + " properly!");
+            plugin.getDebugger().debug(Level.INFO, "&aDownloaded heads " + name + " properly!");
 
         } else if (status == DownloadStatus.LATEST) {
 
-            plugin.getDebugger().debug(Level.WARNING, "&aHeads " + name + " is latest! Awesome!");
+            plugin.getDebugger().debug(Level.INFO, "&aHeads " + name + " is latest! Awesome!");
 
         }
 

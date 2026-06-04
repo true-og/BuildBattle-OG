@@ -22,6 +22,8 @@ package plugily.projects.buildbattle;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Filter;
+import java.util.logging.LogRecord;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.TestOnly;
@@ -78,6 +80,7 @@ public class Main extends PluginMain {
     public void onEnable() {
 
         long start = System.currentTimeMillis();
+        installDebugNoiseFilter();
         new LanguageMigrator(this);
         MessageInitializer messageInitializer = new MessageInitializer(this);
         super.onEnable();
@@ -96,6 +99,28 @@ public class Main extends PluginMain {
         initializePluginClasses();
         getDebugger().debug("Full {0} plugin enabled", getName());
         getDebugger().debug("[System] [Plugin] Initialization finished took {0}ms", System.currentTimeMillis() - start);
+
+    }
+
+    // Suppress shaded MiniGamesBox-Classic "[Debug] Loaded locale" startup spam
+    // logged at WARNING.
+    private void installDebugNoiseFilter() {
+
+        java.util.logging.Logger jul = java.util.logging.Logger.getLogger(getName());
+        Filter previous = jul.getFilter();
+        jul.setFilter(new Filter() {
+
+            @Override
+            public boolean isLoggable(LogRecord record) {
+
+                String msg = record.getMessage();
+                if (msg != null && msg.startsWith("[Debug] Loaded locale"))
+                    return false;
+                return previous == null || previous.isLoggable(record);
+
+            }
+
+        });
 
     }
 
