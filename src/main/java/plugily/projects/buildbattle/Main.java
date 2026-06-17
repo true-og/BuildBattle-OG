@@ -81,6 +81,15 @@ public class Main extends PluginMain {
 
         long start = System.currentTimeMillis();
         installDebugNoiseFilter();
+        // Write bundled powerups.yml to the data folder so the shaded
+        // MiniGamesBox-Classic reader finds it instead of logging
+        // "File powerups.yml does not exist!".
+        if (!new java.io.File(getDataFolder(), "powerups.yml").exists()) {
+
+            saveResource("powerups.yml", false);
+
+        }
+
         new LanguageMigrator(this);
         MessageInitializer messageInitializer = new MessageInitializer(this);
         super.onEnable();
@@ -114,7 +123,9 @@ public class Main extends PluginMain {
             public boolean isLoggable(LogRecord record) {
 
                 String msg = record.getMessage();
-                if (msg != null && msg.startsWith("[Debug] Loaded locale"))
+                // Raw record is "[Debug] &aLoaded locale ..." (color code +
+                // concatenated values), so match by substring, not prefix.
+                if (msg != null && msg.contains("Loaded locale"))
                     return false;
                 return previous == null || previous.isLoggable(record);
 
