@@ -241,4 +241,5 @@ public class Main extends PluginMain {
         return new SetupCategoryManager(setupInventory);
 
     }
+
 }
