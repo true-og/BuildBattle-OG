@@ -111,8 +111,7 @@ public class Main extends PluginMain {
 
     }
 
-    // Suppress shaded MiniGamesBox-Classic "[Debug] Loaded locale" startup spam
-    // logged at WARNING.
+    // Suppress known non-actionable startup noise from shaded MiniGamesBox-Classic.
     private void installDebugNoiseFilter() {
 
         java.util.logging.Logger jul = java.util.logging.Logger.getLogger(getName());
@@ -123,9 +122,10 @@ public class Main extends PluginMain {
             public boolean isLoggable(LogRecord record) {
 
                 String msg = record.getMessage();
-                // Raw record is "[Debug] &aLoaded locale ..." (color code +
-                // concatenated values), so match by substring, not prefix.
-                if (msg != null && msg.contains("Loaded locale"))
+                // Raw locale records contain color codes and concatenated values,
+                // so match them by substring rather than prefix.
+                if (msg != null && (msg.contains("Loaded locale")
+                        || msg.contains("You are using some fork that was not tested by us")))
                     return false;
                 return previous == null || previous.isLoggable(record);
 
@@ -241,5 +241,4 @@ public class Main extends PluginMain {
         return new SetupCategoryManager(setupInventory);
 
     }
-
 }
