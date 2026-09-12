@@ -59,6 +59,7 @@ import plugily.projects.buildbattle.handlers.misc.MyWorldsManager;
 import plugily.projects.buildbattle.handlers.misc.PreJoinLocationListener;
 import plugily.projects.buildbattle.handlers.misc.PreJoinLocationStore;
 import plugily.projects.buildbattle.handlers.misc.ReconnectToMainWorldListener;
+import plugily.projects.buildbattle.handlers.misc.ScoreboardOGBridge;
 import plugily.projects.buildbattle.handlers.setup.SetupCategoryManager;
 import plugily.projects.buildbattle.handlers.stats.BuildBattleScores;
 import plugily.projects.buildbattle.handlers.themes.ThemeManager;
@@ -470,6 +471,9 @@ public class Main extends PluginMain {
         // arena state as the player's real survival inventory. The location store is
         // flushed last so anything teardown changes still reaches disk.
         super.onDisable();
+
+        // Arena stop already released every claimed sidebar; this catches a stray one.
+        ScoreboardOGBridge.releaseAll();
 
         if (builderCreativeManager != null) {
 

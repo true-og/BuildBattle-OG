@@ -27,7 +27,7 @@ java {
 /* ----------------------------- Metadata ------------------------------ */
 group = "plugily.projects"
 
-version = "5.1.7"
+version = "5.1.8"
 
 description = "BuildBattle-OG" // Declare plugin description.
 
@@ -87,6 +87,7 @@ dependencies {
     // runtime. compileOnly/compileOnlyApi stay off runtimeClasspath, so Shadow never bundles or relocates them.
     compileOnlyApi(project(":libs:Utilities-OG"))
     compileOnly(files("libs/Chat-OG/Chat-OG.jar")) // Import Chat-OG API for world chat formatting.
+    compileOnly(files("libs/Scoreboard-OG/Scoreboard-OG.jar")) // Import Scoreboard-OG sidebar API.
     implementation("plugily.projects:MiniGamesBox-Classic:1.4.5")
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.3") // Add JUnit API to testing environment.
     // compileOnly/compileOnlyApi do not propagate to the test classpath, so restate what the tests need.

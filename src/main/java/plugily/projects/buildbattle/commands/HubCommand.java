@@ -36,6 +36,9 @@ public class HubCommand implements CommandExecutor {
         if (arena != null) {
 
             plugin.getArenaManager().hubLeaveAttempt(player, arena);
+            // The MiniGamesBox snapshot belongs to the arena world's MyWorlds inventory,
+            // so it goes back before the teleport home, not over the survival one.
+            InventorySerializer.loadInventory(plugin, player);
 
         }
 
@@ -46,12 +49,6 @@ public class HubCommand implements CommandExecutor {
 
                 send(player, "&cUnable to return you to your previous location.");
                 return true;
-
-            }
-
-            if (arena != null) {
-
-                InventorySerializer.loadInventory(plugin, player);
 
             }
 
@@ -74,12 +71,6 @@ public class HubCommand implements CommandExecutor {
 
             send(player, "&cUnable to return you to the hub.");
             return true;
-
-        }
-
-        if (arena != null) {
-
-            InventorySerializer.loadInventory(plugin, player);
 
         }
 

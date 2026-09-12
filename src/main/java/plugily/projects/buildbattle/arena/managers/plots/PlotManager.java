@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -128,46 +127,33 @@ public class PlotManager {
 
                 }
 
-                // Should do this in async thread to do not cause dead for the main thread
-                CompletableFuture.supplyAsync(() -> {
+                // Block reads stay on the main thread; the walk is bounded by the plot height.
+                Location loc = tploc;
+                int maxSteps = Math.max(1, cuboid.getMaxPoint().getBlockY() - cuboid.getMinPoint().getBlockY() + 2);
+                for (int step = 0; step < maxSteps && loc.getBlock().getType() != Material.AIR; step++) {
 
-                    Location loc = tploc;
-                    while (loc.getBlock().getType() != Material.AIR) {
+                    loc = loc.add(0, 1, 0);
+                    // teleporting 1 x and z block away from center cause Y is above plot limit
+                    if (loc.getY() >= cuboid.getMaxPoint().getY()) {
 
-                        if (arena.getArenaInGameState() != BaseArena.ArenaInGameState.THEME_VOTING) {
-
-                            break; // Thread never ends on flat map?
-
-                        }
-
-                        loc = loc.add(0, 1, 0);
-                        // teleporting 1 x and z block away from center cause Y is above plot limit
-                        if (loc.getY() >= cuboid.getMaxPoint().getY()) {
-
-                            loc = cuboid.getCenter().clone().add(1, 0, 1);
-
-                        }
+                        loc = cuboid.getCenter().clone().add(1, 0, 1);
 
                     }
 
-                    return loc;
+                }
 
-                }).thenAccept(loc -> {
+                for (Player player : buildPlot.getMembers()) {
 
-                    for (Player player : buildPlot.getMembers()) {
+                    VersionUtils.teleport(player, loc);
+                    // Fix respawning bug while theme voting
+                    Bukkit.getScheduler().runTaskLater(arena.getPlugin(), () -> {
 
-                        VersionUtils.teleport(player, loc);
-                        // Fix respawning bug while theme voting
-                        Bukkit.getScheduler().runTaskLater(arena.getPlugin(), () -> {
+                        player.setAllowFlight(true);
+                        player.setFlying(true);
 
-                            player.setAllowFlight(true);
-                            player.setFlying(true);
+                    }, 2);
 
-                        }, 2);
-
-                    }
-
-                });
+                }
 
             }
 

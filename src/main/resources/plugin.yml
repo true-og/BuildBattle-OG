@@ -5,7 +5,7 @@ version: ${version}
 description: Building competition minigame with classic and Guess The Build modes.
 # My_Worlds and MyWorlds are both soft depends on purpose: MyWorldsManager accepts either plugin name,
 # so hard depending on one breaks servers running the other fork.
-softdepend: [ My_Worlds, MyWorlds, GameModeInventories-OG, Spawn-OG, Utilities-OG, Chat-OG, Citizens, PlaceholderAPI, Parties, Spigot-Party-API-PAF, PartyAndFriends, ViaVersion, ProtocolSupport ]
+softdepend: [ My_Worlds, MyWorlds, GameModeInventories-OG, Spawn-OG, Utilities-OG, Chat-OG, Scoreboard-OG, Citizens, PlaceholderAPI, Parties, Spigot-Party-API-PAF, PartyAndFriends, ViaVersion, ProtocolSupport ]
 api-version: ${apiVersion}
 
 commands:

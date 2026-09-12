@@ -3,7 +3,7 @@
 TrueOG Network's fork of [Plugily-Projects/BuildBattle](https://github.com/Plugily-Projects/BuildBattle) — a
 building competition minigame for Purpur `1.19.4`, using `MyWorlds` for arena world management.
 
-Current version: `5.1.5` ([changelog](CHANGELOG.md)).
+Current version: `5.1.8` ([changelog](CHANGELOG.md)).
 
 Two game modes ship in the box. In **classic** mode players build on their own plot against a theme, then vote
 on each other's builds. In **Guess The Build** one player builds while everyone else races to guess the theme
@@ -31,8 +31,8 @@ drives the theme poll the vote menu already owns rather than adding a second one
 - `MyWorlds` (either the `MyWorlds` or the `My_Worlds` fork — both plugin names are accepted)
 - `BKCommonLib` (MyWorlds' own dependency)
 
-Optional, integrated when present: `Utilities-OG`, `Chat-OG`, `GameModeInventories-OG`, `Spawn-OG`,
-`Citizens`, `PlaceholderAPI`, `ViaVersion`.
+Optional, integrated when present: `Utilities-OG`, `Chat-OG`, `Scoreboard-OG`, `GameModeInventories-OG`,
+`Spawn-OG`, `Citizens`, `PlaceholderAPI`, `ViaVersion`.
 
 ## Quick Setup
 
@@ -92,7 +92,7 @@ guessed.
 
 ```yaml
 MyWorlds:
-  # BuildBattle requires My_Worlds and will enable these MyWorlds settings on startup.
+  # Applied to MyWorlds at runtime on startup; MyWorlds' own config.yml is never rewritten.
   Enable-World-Inventories: true
   Enable-World-Chat: true
   # BuildBattle arenas, plots and lobby locations are blocked from these worlds.
@@ -144,8 +144,10 @@ moment a game's points are awarded:
 | `MyWorlds` / `My_Worlds` | **Required.** Arena world management, per-world inventories and chat. |
 | `Utilities-OG` | Registers the `<bb_score>` and `<bb_rank>` [placeholders](#placeholders). `language.yml` values containing a MiniMessage tag or the `&*` rainbow code render through TrueOG's colorizer, enabling `<#rrggbb>` hex, `<gradient:...>`, named colours and decorations. Plain `&`-coded values are passed through byte-for-byte, so nothing shipped changes appearance. Without the plugin, all values keep their default formatting. |
 | `Chat-OG` | Arena chat is scoped per world, styled by BuildBattle-OG's own formatter, and mirrored to the game's Discord channel, provided worlds follow the [naming convention](#world-naming) and `discord.games.BB` exists in Chat-OG's config. The formatter shows the player count in the lobby, `VOTE` and `JUDGING` during the voting phases, and the theme while building — never in Guess The Build, where the theme is the answer. |
+| `Scoreboard-OG` | With `1.2.0` or newer, the arena sidebar is drawn through Scoreboard-OG's sidebar API instead of MiniGamesBox's packet board. The network board returns on its own when the player leaves the arena, and `/togglescoreboard` is honoured. Older builds, or no Scoreboard-OG at all, keep the MiniGamesBox board. The `Scoreboard.*` keys in `language.yml` feed both. |
 | `GameModeInventories-OG` | Builders get a creative exemption scoped to arena worlds at runtime. Do **not** grant regular players `gamemodeinventories.toggle` or `gamemodeinventories.anywhere`, and keep arena worlds **out** of `restrict_adventure_worlds` — guessers are put in adventure mode. |
 | `Spawn-OG` | Keep arena worlds **out** of its `login-safety.worlds` list so reconnect handling stays with BuildBattle-OG. |
+| `VotingPlugin` | Keeps `/vote` and `/v` everywhere outside BuildBattle worlds; BuildBattle-OG never declares either label in plugin.yml. |
 | `Citizens` | Enables `/bba addnpc` for plot NPCs. |
 | `PlaceholderAPI` | Exposes arena placeholders to other plugins. |
 

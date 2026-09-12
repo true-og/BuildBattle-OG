@@ -4,9 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -14,8 +12,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -157,41 +153,12 @@ public class LocaleService {
 
     }
 
+    // This fork never contacts plugily.xyz. Every fetch answers with an empty
+    // stream, so the bundled locale is the only one that ever loads.
     private InputStream requestLocaleFetch(ILocale locale) {
 
-        try {
-
-            URL url = new URL("https://api.plugily.xyz/locale/v3/fetch.php");
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("User-Agent", "PlugilyProjectsLocale/1.0");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Accept-Charset", "UTF-8");
-            connection.setDoOutput(true);
-
-            try (OutputStream outputStream = connection.getOutputStream()) {
-
-                String payload = "pass=localeservice&type=" + plugin.getName();
-                if (locale != null) {
-
-                    payload += "&locale=" + locale.getPrefix();
-
-                }
-
-                outputStream.write(payload.getBytes(StandardCharsets.UTF_8));
-                outputStream.flush();
-
-            }
-
-            return connection.getInputStream();
-
-        } catch (IOException exception) {
-
-            debug(Level.SEVERE, "Could not fetch locale from plugily.xyz api! Cause: {0} ({1})", exception.getCause(),
-                    exception.getMessage());
-            return new ByteArrayInputStream(new byte[0]);
-
-        }
+        debug(Level.FINE, "Remote locale fetch is disabled in this fork; using the bundled locale.");
+        return new ByteArrayInputStream(new byte[0]);
 
     }
 

@@ -34,7 +34,7 @@ Bungee-Mode: false
 Inventory-Manager: true
 
 MyWorlds:
-  # BuildBattle requires My_Worlds and will apply these MyWorlds settings on startup.
+  # Applied to MyWorlds at runtime on startup; MyWorlds' own config.yml is never rewritten.
   Enable-World-Inventories: true
   Enable-World-Chat: false
   # BuildBattle arenas, plots and lobby locations are blocked from these worlds.

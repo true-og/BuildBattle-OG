@@ -9,7 +9,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 import plugily.projects.buildbattle.Main;
@@ -17,9 +16,6 @@ import plugily.projects.buildbattle.arena.BaseArena;
 import plugily.projects.minigamesbox.classic.handlers.language.MessageBuilder;
 import plugily.projects.minigamesbox.classic.utils.configuration.ConfigUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -251,93 +247,22 @@ public class MyWorldsManager {
 
     }
 
+    // Applied at runtime only, the same way TheHerobrine-OG and Splegg-OG do it.
+    // MyWorlds' own config.yml stays the admin's file; nothing here rewrites it.
     private void enableRequiredFeatures() {
 
-        File configFile = new File(myWorlds.getDataFolder(), "config.yml");
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(configFile);
-
         boolean enableWorldInventories = plugin.getConfig().getBoolean("MyWorlds.Enable-World-Inventories", true);
-        boolean enableWorldChat = plugin.getConfig().getBoolean("MyWorlds.Enable-World-Chat", false);
-        boolean inventoriesChanged = false;
-        boolean chatChanged = false;
-        boolean changed = false;
+        if (enableWorldInventories && !MyWorlds.useWorldInventories) {
 
-        if (configuration.getBoolean("useWorldInventories") != enableWorldInventories) {
-
-            configuration.set("useWorldInventories", enableWorldInventories);
-            inventoriesChanged = true;
-            changed = true;
+            myWorlds.setUseWorldInventories(true);
+            plugin.getDebugger().debug("[MyWorlds] Enabled world inventories for this session.");
 
         }
 
-        if (configuration.getBoolean("useWorldChatPermissions") != enableWorldChat) {
+        if (plugin.getConfig().getBoolean("MyWorlds.Enable-World-Chat", false) && !MyWorlds.useWorldChatPermissions) {
 
-            configuration.set("useWorldChatPermissions", enableWorldChat);
-            chatChanged = true;
-            changed = true;
-
-        }
-
-        if (!changed) {
-
-            return;
-
-        }
-
-        try {
-
-            configuration.save(configFile);
-            applyRuntimeChanges(enableWorldInventories, enableWorldChat, inventoriesChanged, chatChanged);
-            plugin.getDebugger().debug(
-                    "[MyWorlds] Updated My_Worlds config: useWorldInventories={0}, useWorldChatPermissions={1}",
-                    enableWorldInventories, enableWorldChat);
-
-        } catch (IOException exception) {
-
-            plugin.getLogger().warning("Failed to update My_Worlds/config.yml: " + exception.getMessage());
-
-        }
-
-    }
-
-    private void applyRuntimeChanges(boolean enableWorldInventories, boolean enableWorldChat,
-            boolean inventoriesChanged, boolean chatChanged)
-    {
-
-        if (inventoriesChanged) {
-
-            myWorlds.setUseWorldInventories(enableWorldInventories);
-
-        }
-
-        if (tryReloadMyWorldsConfig()) {
-
-            return;
-
-        }
-
-        if (chatChanged) {
-
-            MyWorlds.useWorldChatPermissions = enableWorldChat;
-            plugin.getLogger().warning(
-                    "My_Worlds does not expose loadConfig() on this version. useWorldChatPermissions was updated in config.yml, "
-                            + "but a My_Worlds/server restart may be required for the runtime listener state to match.");
-
-        }
-
-    }
-
-    private boolean tryReloadMyWorldsConfig() {
-
-        try {
-
-            Method loadConfigMethod = myWorlds.getClass().getMethod("loadConfig");
-            loadConfigMethod.invoke(myWorlds);
-            return true;
-
-        } catch (ReflectiveOperationException ignored) {
-
-            return false;
+            MyWorlds.useWorldChatPermissions = true;
+            plugin.getDebugger().debug("[MyWorlds] Enabled world chat permissions for this session.");
 
         }
 

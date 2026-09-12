@@ -3,6 +3,25 @@
 All notable OG-fork changes are documented here. Upstream history is at
 https://github.com/Plugily-Projects/BuildBattle.
 
+## 5.1.8 - 2026-09-12
+
+### Changes
+
+- Render the arena sidebar through Scoreboard-OG's sidebar API when Scoreboard-OG
+  `1.2.0` or newer is installed, so the network board comes back by itself after a
+  match and `/togglescoreboard` is honoured. Without it the MiniGamesBox board is
+  used as before.
+- `/hub` now puts MiniGamesBox's inventory snapshot back before the teleport home.
+  The snapshot is taken after the teleport into the arena, so it belongs to the
+  arena world's MyWorlds inventory; restoring it after the teleport overwrote the
+  survival inventory MyWorlds had just swapped back in.
+- MyWorlds settings are applied at runtime only, the way TheHerobrine-OG and
+  Splegg-OG do it. `MyWorlds/config.yml` is no longer rewritten on startup.
+- The locale service stub no longer carries the remote fetch code; every fetch
+  answers with an empty stream, so the bundled locale is the only one that loads.
+- Plot teleport targets are resolved on the main thread instead of a ForkJoin
+  worker reading block state.
+
 ## 5.1.7 - 2026-08-24
 
 ### Changes
