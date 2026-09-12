@@ -3,6 +3,23 @@
 All notable OG-fork changes are documented here. Upstream history is at
 https://github.com/Plugily-Projects/BuildBattle.
 
+## 5.1.9 - 2026-09-12
+
+### Changes
+
+- Claim `/hub`, `/lobby` and `/spawn` inside BuildBattle worlds before any other
+  plugin sees them, the way `/vote` already is. Splegg-OG and TheHerobrine-OG
+  register `/hub` as well, and Bukkit hands the bare label to whichever plugin
+  loads first, so an arena player's `/hub` could run another minigame's command
+  and teleport them out while the arena still counted them; Spawn-OG's `/spawn`
+  did the same. `/lobby` is now an alias of `/hub` everywhere, and the three
+  labels are topped up into `Commands.Whitelist` on startup so MiniGamesBox's
+  in-game command block does not report them.
+- `/bb join` and `/bbjoin` with no lobby list every arena with its state, fill
+  and a clickable join line, like `/hbjoin`. `/bb join` now also accepts a bare
+  number (`/bb join 1`) and a case-insensitive id, and replaces the bundled
+  MiniGamesBox join argument.
+
 ## 5.1.8 - 2026-09-12
 
 ### Changes

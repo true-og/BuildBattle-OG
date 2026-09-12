@@ -3,7 +3,7 @@
 TrueOG Network's fork of [Plugily-Projects/BuildBattle](https://github.com/Plugily-Projects/BuildBattle) — a
 building competition minigame for Purpur `1.19.4`, using `MyWorlds` for arena world management.
 
-Current version: `5.1.8` ([changelog](CHANGELOG.md)).
+Current version: `5.1.9` ([changelog](CHANGELOG.md)).
 
 Two game modes ship in the box. In **classic** mode players build on their own plot against a theme, then vote
 on each other's builds. In **Guess The Build** one player builds while everyone else races to guess the theme
@@ -25,6 +25,16 @@ player back where they started rather than at main world spawn.
 cannot take the `/vote` label away from theme voting. BuildBattle has no map pool to vote on, so the command
 drives the theme poll the vote menu already owns rather than adding a second one.
 
+`/hub`, `/lobby` and `/spawn` are claimed the same way inside BuildBattle worlds. Splegg-OG and
+TheHerobrine-OG register `/hub` too, and Bukkit gives the bare label to whichever plugin loads first, so
+without the claim an arena player's `/hub` could run another minigame's command and teleport them out while
+the arena still counted them; Spawn-OG's `/spawn` did the same. All three now leave the arena properly and
+return the player to where they came from.
+
+Every arena is its own lobby with its own hub world (`BB1-hub`, `BB2-hub`, ...). `/bb join` and `/bbjoin`
+with no lobby list them all with a clickable join line, like `/hbjoin`; `/bb join BB2` or `/bb join 2` joins
+one directly.
+
 ## Requirements
 
 - Purpur `1.19.4`
@@ -45,7 +55,8 @@ Optional, integrated when present: `Utilities-OG`, `Chat-OG`, `Scoreboard-OG`, `
    locations. Use `/bba setup edit <arena>` to reopen it later.
 5. Use `/bba addplot <arena>` with the location wand to mark each build plot.
 6. Set `/bba settheme <theme>`, or leave the bundled `themes.yml` list in place.
-7. Run `/bba reload`, then join with `/bb join <arena>`.
+7. Run `/bba reload`, then join with `/bb join <arena>` (`/bb join` alone lists the lobbies). For a second
+   concurrent lobby, add another instance with its own `BB2-hub` and `BB2-map` worlds.
 8. Optionally place join signs in the hub so players can join without commands (see [Join Signs](#join-signs)).
 
 ## Join Signs
@@ -161,8 +172,9 @@ inherited from MiniGamesBox.
 
 | Command | Permission | Description |
 |---------|------------|-------------|
-| `/bbjoin [lobby]` | — | Join a lobby by id (`BB1`, or just `1`); no argument lists the open lobbies |
-| `/bb join <arena>` | — | Join an arena |
+| `/bb join [lobby]` | — | Join a lobby by id (`BB1`, or just `1`); no argument lists the lobbies with clickable join lines |
+| `/bbjoin [lobby]` | — | The same as `/bb join` |
+| `/hub`, `/lobby`, `/spawn` | — | Leave the arena and return to where you came from, or to main spawn |
 | `/bb randomjoin` | — | Join any arena with room |
 | `/vote [#]` or `/v [#]` | — | List the themes up for voting and cast a vote |
 | `/bb leave` | — | Leave the current arena |

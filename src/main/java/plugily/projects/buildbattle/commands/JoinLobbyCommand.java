@@ -12,9 +12,9 @@ import org.bukkit.entity.Player;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import plugily.projects.buildbattle.Main;
 import plugily.projects.buildbattle.arena.BaseArena;
-import plugily.projects.minigamesbox.api.arena.IPluginArena;
 
-// Joins a BuildBattle lobby by its id (BB1). Maps and themes are not accepted.
+// Joins a BuildBattle lobby by its id (BB1 or 1); with no id the lobby list is
+// shown. Maps and themes are not accepted.
 public class JoinLobbyCommand implements CommandExecutor, TabCompleter {
 
     private final Main plugin;
@@ -38,7 +38,7 @@ public class JoinLobbyCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 0) {
 
-            sendLobbyList(player);
+            LobbyList.send(plugin, player);
             return true;
 
         }
@@ -46,8 +46,8 @@ public class JoinLobbyCommand implements CommandExecutor, TabCompleter {
         final BaseArena arena = LobbyResolver.resolve(plugin, args[0]);
         if (arena == null) {
 
-            send(player, "&c" + args[0] + " does not exist.");
-            sendLobbyList(player);
+            send(player, "&cLobby &e" + args[0] + " &cdoes not exist.");
+            LobbyList.send(plugin, player);
             return true;
 
         }
@@ -79,26 +79,6 @@ public class JoinLobbyCommand implements CommandExecutor, TabCompleter {
         }
 
         return completions;
-
-    }
-
-    private void sendLobbyList(Player player) {
-
-        final List<IPluginArena> arenas = plugin.getArenaRegistry().getArenas();
-        if (arenas.isEmpty()) {
-
-            send(player, "&cThere are no BuildBattle lobbies available.");
-            return;
-
-        }
-
-        send(player, "&6Join a lobby with /bbjoin <lobby>.");
-        for (IPluginArena arena : arenas) {
-
-            send(player, "&6&l" + arena.getId() + " &6(&b" + arena.getPlayers().size() + "&6/&b"
-                    + arena.getMaximumPlayers() + "&6)");
-
-        }
 
     }
 

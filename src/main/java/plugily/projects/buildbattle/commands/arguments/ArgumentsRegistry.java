@@ -32,6 +32,7 @@ import plugily.projects.buildbattle.commands.arguments.admin.plot.AddPlotArgumen
 import plugily.projects.buildbattle.commands.arguments.admin.plot.RemovePlotArgument;
 import plugily.projects.buildbattle.commands.arguments.admin.plot.SelectPlotArgument;
 import plugily.projects.buildbattle.commands.arguments.game.GuessArgument;
+import plugily.projects.buildbattle.commands.arguments.game.JoinArgument;
 import plugily.projects.buildbattle.commands.arguments.game.MenuArgument;
 import plugily.projects.minigamesbox.api.arena.IPluginArena;
 import plugily.projects.minigamesbox.classic.commands.arguments.PluginArgumentsRegistry;
@@ -59,6 +60,8 @@ public class ArgumentsRegistry extends PluginArgumentsRegistry {
         new MenuArgument(this);
         new GuessArgument(this);
         new ThemeArgument(this);
+        // Replaces the bundled /bb join so a bare /bb join lists the lobbies.
+        new JoinArgument(this);
 
     }
 

@@ -17,12 +17,15 @@ commands:
     description: BuildBattle-OG Admin Commands
     usage: "§6Correct usage: /bba [option]"
     aliases: [ bba, buildbadmin ]
+  # Inside BuildBattle worlds HubCommandListener claims /hub, /lobby and /spawn before any
+  # other plugin sees them; this registration only matters outside them.
   hub:
     description: Leave the BuildBattle lobby or game and return to the main world.
     usage: /<command>
+    aliases: [lobby]
   bbjoin:
-    description: Join a BuildBattle lobby by its id.
-    usage: /<command> <lobby>
+    description: Join a BuildBattle lobby by its id (BB1 or 1); lists the lobbies with no argument.
+    usage: /<command> [lobby]
   bbforcestart:
     description: Start the BuildBattle game even if the player minimum is not met.
     permission: buildbattle.admin.forcestart

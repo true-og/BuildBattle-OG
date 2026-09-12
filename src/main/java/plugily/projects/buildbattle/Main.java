@@ -46,6 +46,7 @@ import plugily.projects.buildbattle.boot.TrueOGPlaceholderInitializer;
 import plugily.projects.buildbattle.chat.BuildBattleChatFormatter;
 import plugily.projects.buildbattle.commands.ForceStartCommand;
 import plugily.projects.buildbattle.commands.HubCommand;
+import plugily.projects.buildbattle.commands.HubCommandListener;
 import plugily.projects.buildbattle.commands.JoinLobbyCommand;
 import plugily.projects.buildbattle.commands.VoteCommandListener;
 import plugily.projects.buildbattle.commands.arguments.ArgumentsRegistry;
@@ -230,9 +231,10 @@ public class Main extends PluginMain {
         new ReconnectToMainWorldListener(this);
         new PreJoinLocationListener(this);
         PluginCommand hubCommand = getCommand("hub");
+        HubCommand hub = new HubCommand(this);
         if (hubCommand != null) {
 
-            hubCommand.setExecutor(new HubCommand(this));
+            hubCommand.setExecutor(hub);
 
         } else {
 
@@ -244,6 +246,10 @@ public class Main extends PluginMain {
         registerCommand("bbforcestart", new ForceStartCommand(this));
         // Claims /v and /vote inside BuildBattle worlds before VotingPlugin sees them.
         new VoteCommandListener(this);
+        // Claims /hub, /lobby and /spawn inside BuildBattle worlds the same way, so
+        // another minigame's /hub or Spawn-OG's /spawn never handles an arena player.
+        new HubCommandListener(this, hub);
+        ensureCommandWhitelist();
         registerChatFormatter();
 
         myWorldsManager.synchronizeArenaWorldInventories();
@@ -392,6 +398,36 @@ public class Main extends PluginMain {
         }
 
         keys.add(worldName.substring(0, digitStart));
+
+    }
+
+    // MiniGamesBox blocks every command an arena member runs that is not on
+    // Commands.Whitelist, and it does not check whether the event was already
+    // cancelled, so the commands HubCommandListener claims have to be listed or
+    // the player gets a "blocked" message after being sent home. Older configs
+    // predate /lobby and /spawn, so the list is topped up here.
+    private void ensureCommandWhitelist() {
+
+        final java.util.List<String> whitelist = new java.util.ArrayList<>(
+                getConfig().getStringList("Commands.Whitelist"));
+        boolean changed = false;
+        for (String required : new String[] { "hub", "lobby", "spawn", "bbjoin", "bbforcestart" }) {
+
+            if (whitelist.stream().noneMatch(required::equalsIgnoreCase)) {
+
+                whitelist.add(required);
+                changed = true;
+
+            }
+
+        }
+
+        if (changed) {
+
+            getConfig().set("Commands.Whitelist", whitelist);
+            saveConfig();
+
+        }
 
     }
 

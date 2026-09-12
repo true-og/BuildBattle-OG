@@ -72,6 +72,8 @@ Commands:
     - me
     - help
     - hub
+    - lobby
+    - spawn
     - bbjoin
     - bbforcestart
   # Enable and Disable predefined shortened commands or add your own

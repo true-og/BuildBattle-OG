@@ -11,6 +11,10 @@ import plugily.projects.buildbattle.Main;
 import plugily.projects.buildbattle.arena.BaseArena;
 import plugily.projects.minigamesbox.classic.utils.serialization.InventorySerializer;
 
+// /hub and /lobby. Leaves the arena the player is in and sends them back where
+// they came from, or to main spawn. HubCommandListener routes /hub, /lobby and
+// /spawn here for anyone inside BuildBattle territory, whichever plugin owns
+// the bare label.
 public class HubCommand implements CommandExecutor {
 
     private final Main plugin;
@@ -32,6 +36,13 @@ public class HubCommand implements CommandExecutor {
 
         }
 
+        handle(player);
+        return true;
+
+    }
+
+    public void handle(Player player) {
+
         BaseArena arena = plugin.getArenaRegistry().getArena(player);
         if (arena != null) {
 
@@ -48,21 +59,23 @@ public class HubCommand implements CommandExecutor {
             if (!player.teleport(savedLoc)) {
 
                 send(player, "&cUnable to return you to your previous location.");
-                return true;
+                return;
 
             }
 
             plugin.getBuilderCreativeManager().revoke(player);
             send(player, "&aReturned to your previous location.");
-            return true;
+            return;
 
         }
 
+        // MyWorlds' main world spawn is what Spawn-OG's /setspawn writes, so this
+        // lands on the server spawn.
         World mainWorld = findMainWorld();
         if (mainWorld == null) {
 
             send(player, "&cNo main world is available.");
-            return true;
+            return;
 
         }
 
@@ -70,13 +83,12 @@ public class HubCommand implements CommandExecutor {
         if (!player.teleport(destination)) {
 
             send(player, "&cUnable to return you to the hub.");
-            return true;
+            return;
 
         }
 
         plugin.getBuilderCreativeManager().revoke(player);
         send(player, "&aReturned to the hub.");
-        return true;
 
     }
 
