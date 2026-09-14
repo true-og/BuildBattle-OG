@@ -4,18 +4,65 @@
 # and <prefix><number>-hub for the matching lobby world, so BB1-map and BB1-hub both belong to the
 # game key "BB". Chat-OG keys its per-game Discord channel off that prefix, so keep the two in sync
 # and add a matching "BB" entry under discord.games in Chat-OG's config.yml.
+#
+# BB1 ships fully configured for the open source TrueOG maps: "Plaza" (twelve 31x31 plots around a
+# central plaza, public domain) as the game world BB1-map and "BB1_Hub" (Green Leave Lobby by
+# Libers97, CC BY-SA 3.0) as the lobby world BB1-hub. Both live under maps/ in
+# https://github.com/true-og/true-og. Copy them to the server root under those names and register
+# them with MyWorlds; nothing here needs the setup GUI unless the worlds change.
+#
+# Plot cuboids are the plugin's authority on where players may build: the lowest layer of each cuboid
+# is regenerated as Floor.Material on every reset. Plaza's frames and pedestals sit outside the
+# cuboids and survive resets. The start and spectator spot is the centre of the plaza.
 instances:
   BB1:
-    lobbylocation: BB1-hub,-1.0,80.0,7.0,0.0,0.0
-    startlocation: BB1-map,-1.0,80.0,7.0,0.0,0.0
-    endlocation: BB1-hub,-1.0,80.0,7.0,0.0,0.0
+    lobbylocation: BB1-hub,-2.5,64.0,1.5,0.0,0.0
+    startlocation: BB1-map,0.5,65.0,0.5,0.0,0.0
+    endlocation: BB1-hub,-2.5,64.0,1.5,0.0,0.0
+    spectatorlocation: BB1-map,0.5,65.0,0.5,0.0,0.0
     minimumplayers: 2
-    maximumplayers: 10
+    maximumplayers: 12
     plotmembersize: 1
-    mapname: mapname
+    mapname: Plaza
     world: BB1-map
     # classic (deprecated: solo), guess_the_build
     gametype: classic
-    isdone: false
+    isdone: true
     signs: {}
-    plots: {}
+    plots:
+      '0':
+        '1': BB1-map,-81.0,64.0,-81.0,0.0,0.0
+        '2': BB1-map,-51.0,96.0,-51.0,0.0,0.0
+      '1':
+        '1': BB1-map,-37.0,64.0,-81.0,0.0,0.0
+        '2': BB1-map,-7.0,96.0,-51.0,0.0,0.0
+      '2':
+        '1': BB1-map,7.0,64.0,-81.0,0.0,0.0
+        '2': BB1-map,37.0,96.0,-51.0,0.0,0.0
+      '3':
+        '1': BB1-map,51.0,64.0,-81.0,0.0,0.0
+        '2': BB1-map,81.0,96.0,-51.0,0.0,0.0
+      '4':
+        '1': BB1-map,-81.0,64.0,-37.0,0.0,0.0
+        '2': BB1-map,-51.0,96.0,-7.0,0.0,0.0
+      '5':
+        '1': BB1-map,51.0,64.0,-37.0,0.0,0.0
+        '2': BB1-map,81.0,96.0,-7.0,0.0,0.0
+      '6':
+        '1': BB1-map,-81.0,64.0,7.0,0.0,0.0
+        '2': BB1-map,-51.0,96.0,37.0,0.0,0.0
+      '7':
+        '1': BB1-map,51.0,64.0,7.0,0.0,0.0
+        '2': BB1-map,81.0,96.0,37.0,0.0,0.0
+      '8':
+        '1': BB1-map,-81.0,64.0,51.0,0.0,0.0
+        '2': BB1-map,-51.0,96.0,81.0,0.0,0.0
+      '9':
+        '1': BB1-map,-37.0,64.0,51.0,0.0,0.0
+        '2': BB1-map,-7.0,96.0,81.0,0.0,0.0
+      '10':
+        '1': BB1-map,7.0,64.0,51.0,0.0,0.0
+        '2': BB1-map,37.0,96.0,81.0,0.0,0.0
+      '11':
+        '1': BB1-map,51.0,64.0,51.0,0.0,0.0
+        '2': BB1-map,81.0,96.0,81.0,0.0,0.0

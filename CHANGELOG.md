@@ -3,6 +3,22 @@
 All notable OG-fork changes are documented here. Upstream history is at
 https://github.com/Plugily-Projects/BuildBattle.
 
+## 5.1.10 - 2026-09-14
+
+### Changes
+
+- Ship `arenas.yml` configured for the open source TrueOG maps. Arena `BB1`
+  now points at `Plaza` (public domain, twelve 31x31 plots around a central
+  plaza) as `BB1-map` and `BB1_Hub` (Green Leave Lobby, CC BY-SA 3.0) as
+  `BB1-hub`, with all twelve plot cuboids, the plaza centre as start and
+  spectator location, the hub spawn as lobby and end location, and
+  `maximumplayers: 12`. A fresh install needs the two worlds copied in and
+  registered with MyWorlds, nothing else. Both maps live under `maps/` in the
+  true-og repository.
+- README: Quick Setup follows the bundled-map path first; the manual setup GUI
+  flow is kept for custom arenas and additional lobbies. New "Bundled maps"
+  section documents the worlds, licenses and layout.
+
 ## 5.1.9 - 2026-09-12
 
 ### Changes
