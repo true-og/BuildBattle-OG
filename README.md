@@ -179,6 +179,10 @@ instances:
 Themes are in `themes.yml`, messages in `language.yml`, and per-player statistics use `mysql.yml` when
 `Database.Enabled` is on.
 
+The boss bar is a timer for the current phase: its title names the phase with a `mm:ss` clock and
+`true-og.net`, its colour follows the phase, and it drains as the phase runs out. `Bossbar.Display` in
+`config.yml` turns it off; the `Bossbar` lists in `language.yml` are not read.
+
 ## Placeholders
 
 Registered through Utilities-OG as MiniPlaceholders, resolved for the viewing player, and updated the

@@ -84,7 +84,7 @@ Scoreboard:
       - ""
       - "■ Minimum Players | %arena_min_players%"
       - ""
-      - "   www.plugily.xyz"
+      - "   true-og.net"
     Starting:
       - "■ Mode | %arena_type%"
       - ""
@@ -94,7 +94,7 @@ Scoreboard:
       - ""
       - "■ Minimum Players | %arena_min_players%"
       - ""
-      - "   www.plugily.xyz"
+      - "   true-og.net"
     # Contents of scoreboard while ingame
     In-Game:
       Classic:
@@ -108,7 +108,7 @@ Scoreboard:
         - "&f"
         - "■ Arena | %arena_name%"
         - ""
-        - "   www.plugily.xyz"
+        - "   true-og.net"
       Teams:
         - "■ Theme | %arena_theme%"
         - "&f"
@@ -121,7 +121,7 @@ Scoreboard:
         - "&f"
         - "■ Arena | %arena_name%"
         - ""
-        - "   www.plugily.xyz"
+        - "   true-og.net"
       Guess-The-Build:
         - "■ Mode | %arena_type%"
         - "&f"
@@ -136,7 +136,7 @@ Scoreboard:
         - ""
         - "■ Theme | %arena_theme%"
         - ""
-        - "   www.plugily.xyz"
+        - "   true-og.net"
       Guess-The-Build-Waiting:
         - "■ Mode | %arena_type%"
         - "&f"
@@ -147,7 +147,7 @@ Scoreboard:
         - ""
         - "■ Start in | %arena_time%"
         - ""
-        - "   www.plugily.xyz"
+        - "   true-og.net"
     # Contents of scoreboard while state is ending
     Ending:
       Classic:
@@ -158,7 +158,7 @@ Scoreboard:
         - "&f"
         - "&f"
         - ""
-        - "   www.plugily.xyz"
+        - "   true-og.net"
       Guess-The-Build:
         - "■ Mode | %arena_type%"
         - "&f"
@@ -173,7 +173,7 @@ Scoreboard:
         - "■ 9. %arena_place_member_9% | %arena_place_points_9%"
         - "■ 10. %arena_place_member_10% | %arena_place_points_10%"
         - "&f"
-        - "   www.plugily.xyz"
+        - "   true-og.net"
     # Contents of scoreboard while state is restarting
     Restarting:
       - "■ Mode | %arena_type%"
@@ -183,22 +183,22 @@ Scoreboard:
       - "&f"
       - "&f"
       - ""
-      - "   www.plugily.xyz"
+      - "   true-og.net"
 
 #
 # Bossbar messages
 #
 # Bossbar needs to be enabled on config.yml
 Bossbar:
-  Title: "%plugin_name% - www.plugily.xyz"
+  Title: "%plugin_name% - true-og.net"
   Content:
     Waiting:
       - "Waiting for more players..."
     Starting:
       - "Starting in: %arena_time%"
     In-Game:
-      - "Playing %plugin_name_uppercase% on PLUGILY.XYZ"
-      - "Check the plugin creator out on PLUGILY.XYZ"
+      - "Playing %plugin_name_uppercase% on TRUE-OG.NET"
+      - "Visit us at TRUE-OG.NET"
       - "Time left - %arena_time%"
     Guess-The-Build:
       - "%arena_guess_word%"
@@ -207,7 +207,7 @@ Bossbar:
     Voting:
       - "Vote time left - %arena_time%"
     Ending:
-      - "Game has ended! You were playing on PLUGILY.XYZ"
+      - "Game has ended! You were playing on TRUE-OG.NET"
     Restarting:
       - "Restarting the arena. You will be moved soon!"
 

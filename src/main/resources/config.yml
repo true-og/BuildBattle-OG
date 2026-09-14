@@ -14,10 +14,10 @@
 #    Use filename of the language e.g. de_DE.yml -> locale: de_DE
 locale: default
 
-# Should we display a boss bar with additional arena information?
+# Should we display a boss bar that counts down the current phase?
 Bossbar:
   Display: true
-  # Interval in seconds between messages
+  # Unused by the phase timer bar; kept for MiniGamesBox.
   Interval: 10
 
 

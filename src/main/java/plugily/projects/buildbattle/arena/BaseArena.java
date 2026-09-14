@@ -25,10 +25,12 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import plugily.projects.buildbattle.Main;
 import plugily.projects.buildbattle.arena.managers.MapRestorerManager;
+import plugily.projects.buildbattle.arena.managers.PhaseBossbarManager;
 import plugily.projects.buildbattle.arena.managers.ScoreboardManager;
 import plugily.projects.buildbattle.arena.managers.plots.Plot;
 import plugily.projects.buildbattle.arena.managers.plots.PlotManager;
 import plugily.projects.buildbattle.handlers.menu.registry.particles.ParticleRefreshScheduler;
+import plugily.projects.minigamesbox.api.arena.IArenaState;
 import plugily.projects.minigamesbox.classic.arena.PluginArena;
 import plugily.projects.minigamesbox.classic.handlers.language.MessageBuilder;
 import plugily.projects.minigamesbox.classic.handlers.language.TitleBuilder;
@@ -53,6 +55,9 @@ public class BaseArena extends PluginArena {
     private final List<Player> spectators = new ArrayList<>();
     private MapRestorerManager mapRestorerManager;
     private final PlotManager plotManager;
+    private final PhaseBossbarManager bossbarManager;
+    // Seconds the running phase started with; feeds the boss bar's progress.
+    private int phaseLength;
     private String theme = null;
     protected ParticleRefreshScheduler particleRefreshScheduler;
     private ArenaType arenaType;
@@ -71,6 +76,91 @@ public class BaseArena extends PluginArena {
         mapRestorerManager = new MapRestorerManager(this);
         plotManager = new PlotManager(this);
         setMapRestorerManager(mapRestorerManager);
+        bossbarManager = new PhaseBossbarManager(this);
+
+    }
+
+    // MiniGamesBox adds and removes players through this getter, so the phase
+    // timer bar replaces its rotating-message bar without touching its field.
+    @Override
+    public PhaseBossbarManager getBossbarManager() {
+
+        return bossbarManager;
+
+    }
+
+    // The bar is refreshed after the state handlers so it shows this second.
+    @Override
+    public void run() {
+
+        super.run();
+        bossbarManager.bossBarUpdate();
+
+    }
+
+    public int getPhaseLength() {
+
+        return phaseLength;
+
+    }
+
+    // A timer raised above its current value starts a new phase countdown.
+    @Override
+    public void setTimer(int seconds) {
+
+        notePhaseTimer(seconds);
+        super.setTimer(seconds);
+
+    }
+
+    @Override
+    public void setTimer(int seconds, boolean forceArenaTimer) {
+
+        notePhaseTimer(seconds);
+        super.setTimer(seconds, forceArenaTimer);
+
+    }
+
+    private void notePhaseTimer(int seconds) {
+
+        if (seconds > getTimer()) {
+
+            phaseLength = seconds;
+
+        }
+
+    }
+
+    // A state change adopts whatever timer the new phase was given.
+    private void resetPhase() {
+
+        phaseLength = Math.max(0, getTimer());
+
+    }
+
+    @Override
+    public void setArenaState(IArenaState arenaState, boolean forceArenaState) {
+
+        final boolean changed = arenaState != getArenaState();
+        super.setArenaState(arenaState, forceArenaState);
+        if (changed) {
+
+            resetPhase();
+
+        }
+
+    }
+
+    @Override
+    public void setArenaState(IArenaState arenaState) {
+
+        final boolean changed = arenaState != getArenaState();
+        super.setArenaState(arenaState);
+        if (changed) {
+
+            resetPhase();
+
+        }
 
     }
 
@@ -122,6 +212,8 @@ public class BaseArena extends PluginArena {
         plotList.clear();
         setTheme(null);
         winnerPlot = null;
+        phaseLength = 0;
+        bossbarManager.removeAll();
 
     }
 
@@ -304,7 +396,13 @@ public class BaseArena extends PluginArena {
 
     public void setArenaInGameState(ArenaInGameState arenaInGameState) {
 
+        final boolean changed = arenaInGameState != this.arenaInGameState;
         this.arenaInGameState = arenaInGameState;
+        if (changed) {
+
+            resetPhase();
+
+        }
 
     }
 

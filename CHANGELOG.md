@@ -40,6 +40,18 @@ https://github.com/Plugily-Projects/BuildBattle.
 - README: Quick Setup no longer asks for a manual copy to the server root or
   `/mw load`; the Bundled maps and Configuration sections describe the map
   directory and the two new keys.
+- The boss bar is now a timer for the current phase instead of MiniGamesBox's
+  rotating messages. Its title names the phase (waiting with the player count,
+  starting, theme vote, building, plot vote, builder picking a theme, guess the
+  build, next round, game over, restarting) with a `mm:ss` clock and
+  `true-og.net`, its colour follows the phase and it drains from full to empty
+  as the phase runs out. `BaseArena` records the length of each phase from the
+  timer and state changes, `PhaseBossbarManager` is returned from
+  `getBossbarManager()` so MiniGamesBox's own join and leave hooks drive it,
+  and `Bossbar.Interval` in `config.yml` no longer has an effect.
+- Every `plugily.xyz` link a player could see in game now reads `true-og.net`:
+  the boss bar, the `Bossbar` and `Scoreboard` lists in `language.yml` and
+  `locales/language_default.yml`.
 
 ## 5.1.10 - 2026-09-14
 
