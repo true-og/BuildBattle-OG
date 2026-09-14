@@ -3,6 +3,35 @@
 All notable OG-fork changes are documented here. Upstream history is at
 https://github.com/Plugily-Projects/BuildBattle.
 
+## 5.1.11 - 2026-09-14
+
+### Changes
+
+- Arena worlds no longer come up as vanilla terrain. The shaded MiniGamesBox
+  deserializes arena locations with `Bukkit.createWorld(new WorldCreator(name))`
+  for any world that is not loaded, so the first boot after 5.1.10 shipped the
+  ready-made `BB1` arena generated plain overworlds named `BB1-map` and
+  `BB1-hub` when the map folders were not in place yet, and MyWorlds recorded
+  them with an empty chunk generator. `ArenaRegistry` now refuses to register
+  an arena whose worlds cannot be loaded from an existing folder, so that path
+  is never reached.
+- Maps are stored under a cold-storage directory instead of the server root,
+  the way Splegg-OG and TheHerobrine-OG do it: `MyWorlds.Map-Base` (default
+  `maps`, relative to the server root) holds one folder per map. On every
+  enable each world named in `arenas.yml` is resolved to `<Map-Base>/<Name>/`
+  (case-insensitively, ignoring `-` and `_`, and for an arena's game world also
+  by its `mapname`, so `BB1-map` finds `maps/Plaza` and `BB1-hub` finds
+  `maps/BB1_Hub`), any loaded copy is unloaded, the server-root copy is deleted
+  and replaced with a fresh copy, and MyWorlds loads it. A world without a map
+  there is loaded from the server root as before. Set `Map-Base` empty to turn
+  the copy off.
+- Bundled `BuildBattle-OG:void` chunk generator, pinned onto every arena world
+  the plugin loads unless MyWorlds already has one for it
+  (`MyWorlds.Void-Generator`), so chunks outside the saved map stay void.
+- README: Quick Setup no longer asks for a manual copy to the server root or
+  `/mw load`; the Bundled maps and Configuration sections describe the map
+  directory and the two new keys.
+
 ## 5.1.10 - 2026-09-14
 
 ### Changes

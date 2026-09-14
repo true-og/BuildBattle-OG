@@ -31,6 +31,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.generator.ChunkGenerator;
 import org.jetbrains.annotations.TestOnly;
 import plugily.projects.buildbattle.arena.ArenaEvents;
 import plugily.projects.buildbattle.arena.ArenaManager;
@@ -53,6 +54,7 @@ import plugily.projects.buildbattle.commands.arguments.ArgumentsRegistry;
 import plugily.projects.buildbattle.handlers.LanguageMigrator;
 import plugily.projects.buildbattle.handlers.language.TrueOGLanguageManager;
 import plugily.projects.buildbattle.handlers.menu.OptionsRegistry;
+import plugily.projects.buildbattle.handlers.misc.ArenaWorldProvisioner;
 import plugily.projects.buildbattle.handlers.misc.BlacklistManager;
 import plugily.projects.buildbattle.handlers.misc.BuilderCreativeManager;
 import plugily.projects.buildbattle.handlers.misc.HeadDatabaseManager;
@@ -61,6 +63,7 @@ import plugily.projects.buildbattle.handlers.misc.PreJoinLocationListener;
 import plugily.projects.buildbattle.handlers.misc.PreJoinLocationStore;
 import plugily.projects.buildbattle.handlers.misc.ReconnectToMainWorldListener;
 import plugily.projects.buildbattle.handlers.misc.ScoreboardOGBridge;
+import plugily.projects.buildbattle.handlers.misc.VoidChunkGenerator;
 import plugily.projects.buildbattle.handlers.setup.SetupCategoryManager;
 import plugily.projects.buildbattle.handlers.stats.BuildBattleScores;
 import plugily.projects.buildbattle.handlers.themes.ThemeManager;
@@ -85,6 +88,7 @@ public class Main extends PluginMain {
     private ArgumentsRegistry argumentsRegistry;
     private PlotMenuHandler plotMenuHandler;
     private MyWorldsManager myWorldsManager;
+    private ArenaWorldProvisioner arenaWorldProvisioner;
     private PreJoinLocationStore preJoinLocationStore;
     private BuilderCreativeManager builderCreativeManager;
     private ILanguageManager languageManager;
@@ -227,6 +231,9 @@ public class Main extends PluginMain {
         new ArenaEvents(this);
         arenaManager = new ArenaManager(this);
         builderCreativeManager = new BuilderCreativeManager(this);
+        // Load worlds first, or MiniGamesBox generates vanilla ones on register.
+        arenaWorldProvisioner = new ArenaWorldProvisioner(this);
+        arenaWorldProvisioner.provisionArenaWorlds();
         arenaRegistry.registerArenas();
         new ReconnectToMainWorldListener(this);
         new PreJoinLocationListener(this);
@@ -303,6 +310,20 @@ public class Main extends PluginMain {
     public BuildBattleScores getBuildBattleScores() {
 
         return buildBattleScores;
+
+    }
+
+    public ArenaWorldProvisioner getArenaWorldProvisioner() {
+
+        return arenaWorldProvisioner;
+
+    }
+
+    // Backs the BuildBattle-OG:void id pinned onto arena worlds in MyWorlds.
+    @Override
+    public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
+
+        return new VoidChunkGenerator();
 
     }
 

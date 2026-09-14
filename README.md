@@ -50,11 +50,18 @@ The bundled `arenas.yml` ships arena `BB1` fully configured for the open source 
 bundled `config.yml` already protects `world`, `world_nether` and `world_the_end`. What is left is
 putting the two worlds in place:
 
-1. Fetch the maps from the [true-og repository](https://github.com/true-og/true-og) (`maps/`): copy
-   `Plaza` to the server root as `BB1-map` and `BB1_Hub` as `BB1-hub`. See [Bundled maps](#bundled-maps).
-2. Register both with MyWorlds (`/mw load BB1-map`, `/mw load BB1-hub`) and drop the jar in `plugins/`.
-   If the server is already running, `/bba reload` picks the arena up; otherwise the next start does.
+1. Fetch the maps from the [true-og repository](https://github.com/true-og/true-og) (`maps/`) and put
+   `Plaza` and `BB1_Hub` under `<server root>/maps/`, the same directory Splegg-OG and TheHerobrine-OG use
+   (`MyWorlds.Map-Base` in `config.yml`). See [Bundled maps](#bundled-maps).
+2. Drop the jar in `plugins/` and start the server. On every boot the plugin copies each arena world from
+   `maps/` to the server root under its world name (`BB1-map` from `Plaza` via the arena's `mapname`,
+   `BB1-hub` from `BB1_Hub`), pins its void generator and loads it through MyWorlds; nothing has to be
+   registered by hand. Worlds live at the server root only as disposable copies.
 3. `/bb join BB1` (`/bb join` alone lists the lobbies).
+
+A world with no map under `maps/` is loaded from the server root as before, but never generated: an arena
+whose world is missing from both places is skipped with an error in the console instead of being handed
+a freshly generated vanilla world.
 
 Only if your main worlds are not named `world`, `world_nether` and `world_the_end`: list them under
 `MyWorlds.Protected-Worlds` in `config.yml` so arenas can never be created there.
@@ -67,8 +74,9 @@ signs in the hub so players can join without commands (see [Join Signs](#join-si
 
 ## Bundled maps
 
-Both maps are maintained in the [true-og repository](https://github.com/true-og/true-og) under `maps/`
-and are the canonical worlds for the shipped `BB1` arena:
+Both maps are maintained in the [true-og repository](https://github.com/true-og/true-og) under `maps/`,
+which is also where the server keeps them (`MyWorlds.Map-Base`), and are the canonical worlds for the
+shipped `BB1` arena:
 
 | Map | Server world | License | Notes |
 |---|---|---|---|
@@ -81,6 +89,11 @@ player). Plot floors are regenerated from the cuboid's lowest layer with `Floor.
 Plaza's oak floors match the default `log`, and its frames and pedestals sit outside the cuboids so they
 survive resets. Keep both worlds out of GameModeInventories-OG's `restrict_adventure_worlds` and Spawn-OG's
 `login-safety.worlds`.
+
+The server-root copies are rebuilt from `maps/` on every start, so in-game edits to an arena world do not
+survive a restart; to change a map, replace the files under `maps/<Name>/`. Chunks outside the saved
+region generate as void through the bundled `BuildBattle-OG:void` generator, which the plugin pins onto
+each arena world in MyWorlds' `worlds.yml` unless one is already set (`MyWorlds.Void-Generator`).
 
 ## Join Signs
 
@@ -136,6 +149,11 @@ MyWorlds:
     - world_the_end
   # Days to keep a player's pre-arena return location on disk (0 = keep forever).
   PreJoin-Location-Expiry-Days: 30
+  # Cold-storage map directory, relative to the server root (absolute paths accepted, empty disables).
+  # Each arena world is copied from <Map-Base>/<Name>/ to the server root and loaded on every boot.
+  Map-Base: 'maps'
+  # Pin the bundled void generator onto every arena world so unsaved chunks stay void.
+  Void-Generator: true
 ```
 
 Arenas live in `arenas.yml`:

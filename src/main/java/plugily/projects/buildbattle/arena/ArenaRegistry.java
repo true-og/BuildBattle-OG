@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import plugily.projects.buildbattle.Main;
 import plugily.projects.buildbattle.arena.managers.plots.Plot;
+import plugily.projects.buildbattle.handlers.misc.ArenaWorldProvisioner;
 import plugily.projects.minigamesbox.api.arena.IPluginArena;
 import plugily.projects.minigamesbox.classic.arena.PluginArena;
 import plugily.projects.minigamesbox.classic.arena.PluginArenaRegistry;
@@ -53,6 +54,37 @@ public class ArenaRegistry extends PluginArenaRegistry {
 
         super(plugin);
         this.plugin = plugin;
+
+    }
+
+    // Skips arenas with unloaded worlds: MiniGamesBox would createWorld() them.
+    @Override
+    public void registerArena(String id) {
+
+        ArenaWorldProvisioner provisioner = plugin.getArenaWorldProvisioner();
+        for (String worldName : ArenaWorldProvisioner.collectArenaWorlds(ConfigUtils.getConfig(plugin, "arenas"), id)
+                .keySet())
+        {
+
+            if (plugin.getMyWorldsManager().isProtectedWorld(worldName)) {
+
+                // additionalValidatorChecks reports this one.
+                continue;
+
+            }
+
+            if (provisioner == null || !provisioner.isWorldAvailable(worldName)) {
+
+                plugin.getLogger().severe("Arena " + id + " is not registered: its world '" + worldName
+                        + "' is not loaded and could not be loaded from disk, and registering it anyway would let"
+                        + " MiniGamesBox generate a vanilla world named '" + worldName + "' in its place.");
+                return;
+
+            }
+
+        }
+
+        super.registerArena(id);
 
     }
 

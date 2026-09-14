@@ -45,6 +45,10 @@ MyWorlds:
     - world_the_end
   # Days to keep a player's pre-arena return location on disk (0 = keep forever).
   PreJoin-Location-Expiry-Days: 30
+  # Map dir; each arenas.yml world is copied from <Map-Base>/<Name>/ (or mapname) to the server root every boot. Empty disables.
+  Map-Base: 'maps'
+  # Pin the bundled BuildBattle-OG:void generator onto arena worlds so unsaved chunks stay void.
+  Void-Generator: true
 
 # Compatibility notes (no options to set here):
 # - GameModeInventories-OG: builders get a creative exemption scoped to the arena
