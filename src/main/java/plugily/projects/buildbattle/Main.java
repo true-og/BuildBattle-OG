@@ -27,6 +27,7 @@ import java.util.logging.Filter;
 import java.util.logging.LogRecord;
 import nl.skbotnl.chatog.api.ChatOGAPI;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -57,6 +58,7 @@ import plugily.projects.buildbattle.handlers.menu.OptionsRegistry;
 import plugily.projects.buildbattle.handlers.misc.ArenaWorldProvisioner;
 import plugily.projects.buildbattle.handlers.misc.BlacklistManager;
 import plugily.projects.buildbattle.handlers.misc.BuilderCreativeManager;
+import plugily.projects.buildbattle.handlers.misc.GameModeInventoriesGuard;
 import plugily.projects.buildbattle.handlers.misc.HeadDatabaseManager;
 import plugily.projects.buildbattle.handlers.misc.MyWorldsManager;
 import plugily.projects.buildbattle.handlers.misc.PreJoinLocationListener;
@@ -91,6 +93,7 @@ public class Main extends PluginMain {
     private ArenaWorldProvisioner arenaWorldProvisioner;
     private PreJoinLocationStore preJoinLocationStore;
     private BuilderCreativeManager builderCreativeManager;
+    private GameModeInventoriesGuard gmiGuard;
     private ILanguageManager languageManager;
     private BuildBattleScores buildBattleScores;
 
@@ -230,11 +233,14 @@ public class Main extends PluginMain {
         BaseArena.init(this);
         new ArenaEvents(this);
         arenaManager = new ArenaManager(this);
+        gmiGuard = new GameModeInventoriesGuard(this, player -> isArenaWorld(player.getWorld()));
         builderCreativeManager = new BuilderCreativeManager(this);
         // Load worlds first, or MiniGamesBox generates vanilla ones on register.
         arenaWorldProvisioner = new ArenaWorldProvisioner(this);
         arenaWorldProvisioner.provisionArenaWorlds();
         arenaRegistry.registerArenas();
+        // /reload leaves players standing in arena worlds with no suspension.
+        gmiGuard.sweepOnlinePlayers();
         new ReconnectToMainWorldListener(this);
         new PreJoinLocationListener(this);
         PluginCommand hubCommand = getCommand("hub");
@@ -336,6 +342,50 @@ public class Main extends PluginMain {
     public BuilderCreativeManager getBuilderCreativeManager() {
 
         return builderCreativeManager;
+
+    }
+
+    public GameModeInventoriesGuard getGmiGuard() {
+
+        return gmiGuard;
+
+    }
+
+    // BuildBattle territory: every registered arena's lobby and game worlds plus
+    // the plot worlds arenas.yml names, which MiniGamesBox does not list.
+    public boolean isArenaWorld(World world) {
+
+        if (world == null) {
+
+            return false;
+
+        }
+
+        if (arenaRegistry != null) {
+
+            for (World arenaWorld : arenaRegistry.getArenaWorlds()) {
+
+                if (arenaWorld != null && arenaWorld.getName().equals(world.getName())) {
+
+                    return true;
+
+                }
+
+            }
+
+            for (World arenaWorld : arenaRegistry.getArenaIngameWorlds()) {
+
+                if (arenaWorld != null && arenaWorld.getName().equals(world.getName())) {
+
+                    return true;
+
+                }
+
+            }
+
+        }
+
+        return myWorldsManager != null && myWorldsManager.isConfiguredArenaWorld(world.getName());
 
     }
 
@@ -535,6 +585,12 @@ public class Main extends PluginMain {
         if (builderCreativeManager != null) {
 
             builderCreativeManager.revokeAll();
+
+        }
+
+        if (gmiGuard != null) {
+
+            gmiGuard.releaseAll();
 
         }
 

@@ -1,13 +1,11 @@
 package plugily.projects.buildbattle.handlers.misc;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,35 +17,24 @@ import org.bukkit.permissions.PermissionAttachment;
 
 import plugily.projects.buildbattle.Main;
 
-/**
- * Keeps BuildBattle compatible with GameModeInventories-OG while making the
- * arena worlds the only place on the server where a regular player may hold
- * creative mode -- and only as the builder.
- *
- * Two tiers of runtime permission attachment:
- *
- * Every arena participant gets gamemodeinventories.use negated for the length
- * of their stay. MiniGamesBox owns inventory save/restore inside arenas, and a
- * GameModeInventories swap on the survival/adventure/creative flips the game
- * performs would clobber armor and offhand mid-restore (they are applied before
- * the gamemode is set) and pollute the player's stored survival inventory with
- * arena state.
- *
- * Builders additionally get gamemodeinventories.anywhere (sanctions creative
- * and stops the forced-survival watchdogs) and gamemodeinventories.bypass
- * (lifts creative item restrictions inside the plots with GMI's default bypass
- * flags). These are stripped the moment the builder leaves creative by any
- * route: round rotation, arena leave, game end, world change, quit.
- */
+// Makes the arena worlds the only place on the server where a regular player
+// may hold creative mode, and only as the builder.
+//
+// The GameModeInventories-OG inventory swap itself is suspended by
+// GameModeInventoriesGuard for the whole stay in arena territory, whichever
+// route the player took in. This class only layers the builder grant on top:
+// gamemodeinventories.anywhere sanctions creative and stops the forced-survival
+// watchdogs, gamemodeinventories.bypass lifts creative item restrictions inside
+// the plots with GMI's default bypass flags. Both are stripped the moment the
+// builder leaves creative by any route: round rotation, arena leave, game end,
+// world change, quit.
 public class BuilderCreativeManager implements Listener {
 
     private static final String GMI_ANYWHERE_PERMISSION = "gamemodeinventories.anywhere";
-    private static final String GMI_USE_PERMISSION = "gamemodeinventories.use";
     private static final String GMI_BYPASS_PERMISSION = "gamemodeinventories.bypass";
 
     private final Main plugin;
-    private final Map<UUID, PermissionAttachment> exemptions = new ConcurrentHashMap<>();
-    private final Set<UUID> builders = ConcurrentHashMap.newKeySet();
+    private final Map<UUID, PermissionAttachment> builders = new ConcurrentHashMap<>();
 
     public BuilderCreativeManager(Main plugin) {
 
@@ -56,24 +43,20 @@ public class BuilderCreativeManager implements Listener {
 
     }
 
-    /**
-     * Suspends GameModeInventories inventory swapping for an arena participant.
-     * Called when the player joins an arena; lasts until they leave it.
-     */
+    // Suspends GameModeInventories swapping for an arena participant. Idempotent,
+    // and a no-op for anyone the world-entry listener already covered.
     public void enterArena(Player player) {
 
-        ensureAttachment(player);
+        plugin.getGmiGuard().suspend(player);
 
     }
 
-    /**
-     * Puts an arena builder into creative mode. Refused when the player is not
-     * inside an arena world, so BuildBattle can never become a creative exemption
-     * anywhere else on the server.
-     */
+    // Puts an arena builder into creative mode. Refused when the player is not
+    // inside an arena world, so BuildBattle can never become a creative exemption
+    // anywhere else on the server.
     public void grantBuilderCreative(Player player) {
 
-        if (!isArenaWorld(player.getWorld())) {
+        if (!plugin.isArenaWorld(player.getWorld())) {
 
             plugin.getDebugger().debug("[BuilderCreative] Refusing creative for {0}: world {1} is not an arena world.",
                     player.getName(), player.getWorld().getName());
@@ -81,10 +64,12 @@ public class BuilderCreativeManager implements Listener {
 
         }
 
-        PermissionAttachment attachment = ensureAttachment(player);
+        // Whatever route put them here, the swap must be off before the flip.
+        plugin.getGmiGuard().suspend(player);
+        PermissionAttachment attachment = builders.computeIfAbsent(player.getUniqueId(),
+                id -> player.addAttachment(plugin));
         attachment.setPermission(GMI_ANYWHERE_PERMISSION, true);
         attachment.setPermission(GMI_BYPASS_PERMISSION, true);
-        builders.add(player.getUniqueId());
 
         player.setGameMode(GameMode.CREATIVE);
         if (player.getGameMode() != GameMode.CREATIVE) {
@@ -98,63 +83,48 @@ public class BuilderCreativeManager implements Listener {
 
     }
 
-    /**
-     * Removes the whole exemption. Safe to call for players that never had one.
-     * Callers that restore the player's inventory must do so before revoking, so
-     * GameModeInventories cannot swap inventories mid-restore.
-     */
+    // The player is done with the arena. The builder grant goes at once; the
+    // swap suspension is only lifted once they are actually outside arena
+    // territory, a tick after the teleport out, so the MyWorlds gamemode restore
+    // on the way home runs under it. Safe to call for players that never had
+    // either.
     public void revoke(Player player) {
 
-        builders.remove(player.getUniqueId());
-        PermissionAttachment attachment = exemptions.remove(player.getUniqueId());
-        if (attachment == null) {
-
-            return;
-
-        }
-
-        try {
-
-            attachment.remove();
-
-        } catch (IllegalArgumentException ignored) {
-
-            // The player instance is already gone; the attachment died with it.
-
-        }
+        endBuilderCreative(player);
+        plugin.getGmiGuard().releaseAfterLeaving(player);
 
     }
 
     public void revokeAll() {
 
-        for (UUID playerId : exemptions.keySet()) {
+        for (UUID playerId : builders.keySet()) {
 
             Player player = Bukkit.getPlayer(playerId);
             if (player != null) {
 
-                revoke(player);
+                endBuilderCreative(player);
 
             } else {
 
                 builders.remove(playerId);
-                exemptions.remove(playerId);
 
             }
 
         }
+
+        plugin.getGmiGuard().releaseAll();
 
     }
 
     // The builder left creative by any route (round rotation to adventure, the
     // MiniGamesBox end-of-game restore to survival, an admin /gamemode). The
     // demotion is deferred a tick so the inventory restore that triggered the
-    // change finishes with the no-swap permission still attached; that
-    // permission itself stays until the player leaves the arena.
+    // change finishes first.
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onGameModeChange(PlayerGameModeChangeEvent event) {
 
         Player player = event.getPlayer();
-        if (event.getNewGameMode() == GameMode.CREATIVE || !builders.contains(player.getUniqueId())) {
+        if (event.getNewGameMode() == GameMode.CREATIVE || !builders.containsKey(player.getUniqueId())) {
 
             return;
 
@@ -172,100 +142,60 @@ public class BuilderCreativeManager implements Listener {
 
     }
 
-    // A participant left the arena worlds. Builders still in creative are
-    // flipped to survival before the attachment is removed, so
-    // GameModeInventories neither swaps inventories on the flip nor sees a
-    // sanctioned creative outside the arena.
+    // A builder left the arena worlds still in creative (a respawn or another
+    // plugin's teleport, since the arena's own exits demote first). Flipped to
+    // survival while the swap suspension still holds, then the grant goes.
     @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldChange(PlayerChangedWorldEvent event) {
 
         Player player = event.getPlayer();
-        if (!exemptions.containsKey(player.getUniqueId()) || isArenaWorld(player.getWorld())) {
+        if (!builders.containsKey(player.getUniqueId()) || plugin.isArenaWorld(player.getWorld())) {
 
             return;
 
         }
 
-        if (builders.contains(player.getUniqueId()) && player.getGameMode() == GameMode.CREATIVE) {
+        if (player.getGameMode() == GameMode.CREATIVE) {
 
             player.setGameMode(GameMode.SURVIVAL);
 
         }
 
-        revoke(player);
+        endBuilderCreative(player);
 
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
 
-        revoke(event.getPlayer());
-
-    }
-
-    private PermissionAttachment ensureAttachment(Player player) {
-
-        return exemptions.computeIfAbsent(player.getUniqueId(), id -> {
-
-            PermissionAttachment attachment = player.addAttachment(plugin);
-            attachment.setPermission(GMI_USE_PERMISSION, false);
-            return attachment;
-
-        });
+        endBuilderCreative(event.getPlayer());
 
     }
 
     private void endBuilderCreative(Player player) {
 
-        if (!builders.remove(player.getUniqueId())) {
+        if (player == null) {
 
             return;
 
         }
 
-        PermissionAttachment attachment = exemptions.get(player.getUniqueId());
+        PermissionAttachment attachment = builders.remove(player.getUniqueId());
         if (attachment == null) {
 
             return;
 
         }
 
-        attachment.unsetPermission(GMI_ANYWHERE_PERMISSION);
-        attachment.unsetPermission(GMI_BYPASS_PERMISSION);
+        try {
 
-    }
+            attachment.remove();
 
-    private boolean isArenaWorld(World world) {
+        } catch (IllegalArgumentException ignored) {
 
-        if (world == null) {
-
-            return false;
+            // The player instance is already gone; the attachment died with it.
 
         }
-
-        for (World arenaWorld : plugin.getArenaRegistry().getArenaWorlds()) {
-
-            if (arenaWorld != null && arenaWorld.getName().equals(world.getName())) {
-
-                return true;
-
-            }
-
-        }
-
-        for (World arenaWorld : plugin.getArenaRegistry().getArenaIngameWorlds()) {
-
-            if (arenaWorld != null && arenaWorld.getName().equals(world.getName())) {
-
-                return true;
-
-            }
-
-        }
-
-        // Plot worlds are BuildBattle-specific and not part of the MiniGamesBox
-        // world lists, so fall back to the arenas.yml-derived set.
-        return plugin.getMyWorldsManager().isConfiguredArenaWorld(world.getName());
 
     }
 
