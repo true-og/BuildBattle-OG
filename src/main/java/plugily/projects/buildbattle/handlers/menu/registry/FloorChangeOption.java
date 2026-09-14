@@ -21,10 +21,13 @@
 package plugily.projects.buildbattle.handlers.menu.registry;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import plugily.projects.buildbattle.arena.BaseArena;
 import plugily.projects.buildbattle.arena.managers.plots.Plot;
@@ -32,17 +35,26 @@ import plugily.projects.buildbattle.handlers.menu.MenuOption;
 import plugily.projects.buildbattle.handlers.menu.OptionsRegistry;
 import plugily.projects.minigamesbox.classic.handlers.language.MessageBuilder;
 import plugily.projects.minigamesbox.classic.utils.helper.ItemBuilder;
-import plugily.projects.minigamesbox.classic.utils.version.xseries.XEntityType;
 import plugily.projects.minigamesbox.classic.utils.version.xseries.XMaterial;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author Plajer
  *         <p>
  *         Created at 23.12.2018
  */
-public class FloorChangeOption {
+public class FloorChangeOption implements Listener {
+
+    private final Set<UUID> pendingFloorChange = new HashSet<>();
+    private final OptionsRegistry registry;
 
     public FloorChangeOption(OptionsRegistry registry) {
+
+        this.registry = registry;
+        registry.getPlugin().getServer().getPluginManager().registerEvents(this, registry.getPlugin());
 
         registry.registerOption(new MenuOption(14, "FLOOR",
                 new ItemBuilder(XMaterial.OAK_LOG.parseItem())
@@ -52,10 +64,6 @@ public class FloorChangeOption {
 
             @Override
             public void onClick(InventoryClickEvent event) {
-
-                ItemStack itemStack = event.getCursor();
-                if (itemStack == null)
-                    return;
 
                 HumanEntity humanEntity = event.getWhoClicked();
 
@@ -70,44 +78,101 @@ public class FloorChangeOption {
 
                 }
 
-                Material material = itemStack.getType();
-                if (material != XMaterial.WATER_BUCKET.parseMaterial()
-                        && material != XMaterial.LAVA_BUCKET.parseMaterial()
-                        && !(material.isBlock() && material.isSolid() && material.isOccluding()))
-                {
-
-                    new MessageBuilder("IN_GAME_MESSAGES_PLOT_PERMISSION_FLOOR_ITEM").asKey().player(player)
-                            .sendPlayer();
-                    return;
-
-                }
-
-                if (registry.getPlugin().getBlacklistManager().getFloorList().contains(material)) {
-
-                    new MessageBuilder("IN_GAME_MESSAGES_PLOT_PERMISSION_FLOOR_ITEM").asKey().player(player)
-                            .sendPlayer();
-                    return;
-
-                }
-
-                Plot plot = arena.getPlotManager().getPlot(player);
-                if (plot == null)
-                    return;
-
-                plot.changeFloor(material, XMaterial.matchXMaterial(itemStack).getData());
-                new MessageBuilder("MENU_OPTION_CONTENT_FLOOR_CHANGED").asKey().player(player).sendPlayer();
-
-                itemStack.setAmount(0);
-                itemStack.setType(Material.AIR);
-                event.getCurrentItem().setType(Material.AIR);
+                pendingFloorChange.add(player.getUniqueId());
                 player.closeInventory();
-
-                player.getNearbyEntities(5, 5, 5).stream().filter(entity -> entity.getType() == XEntityType.ITEM.get())
-                        .forEach(Entity::remove);
+                player.sendMessage("§eRight click a block to make it the floor!");
 
             }
 
         });
+
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+
+        Player player = event.getPlayer();
+        if (!pendingFloorChange.contains(player.getUniqueId())) {
+
+            return;
+
+        }
+
+        if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK
+                && event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_AIR)
+        {
+
+            return;
+
+        }
+
+        BaseArena arena = registry.getPlugin().getArenaRegistry().getArena(player);
+        if (arena == null) {
+
+            pendingFloorChange.remove(player.getUniqueId());
+            return;
+
+        }
+
+        Plot plot = arena.getPlotManager().getPlot(player);
+        if (plot == null) {
+
+            pendingFloorChange.remove(player.getUniqueId());
+            return;
+
+        }
+
+        Material material = null;
+        byte data = 0;
+
+        ItemStack itemStack = event.getItem();
+        if (itemStack != null && itemStack.getType() != Material.AIR) {
+
+            material = itemStack.getType();
+            data = XMaterial.matchXMaterial(itemStack).getData();
+
+        } else if (event.getClickedBlock() != null) {
+
+            material = event.getClickedBlock().getType();
+            data = event.getClickedBlock().getData();
+
+        }
+
+        if (material == null) {
+
+            return;
+
+        }
+
+        if (material != XMaterial.WATER_BUCKET.parseMaterial() && material != XMaterial.LAVA_BUCKET.parseMaterial()
+                && !(material.isBlock() && material.isSolid() && material.isOccluding()))
+        {
+
+            new MessageBuilder("IN_GAME_MESSAGES_PLOT_PERMISSION_FLOOR_ITEM").asKey().player(player).sendPlayer();
+            pendingFloorChange.remove(player.getUniqueId());
+            return;
+
+        }
+
+        if (registry.getPlugin().getBlacklistManager().getFloorList().contains(material)) {
+
+            new MessageBuilder("IN_GAME_MESSAGES_PLOT_PERMISSION_FLOOR_ITEM").asKey().player(player).sendPlayer();
+            pendingFloorChange.remove(player.getUniqueId());
+            return;
+
+        }
+
+        plot.changeFloor(material, data);
+        new MessageBuilder("MENU_OPTION_CONTENT_FLOOR_CHANGED").asKey().player(player).sendPlayer();
+        pendingFloorChange.remove(player.getUniqueId());
+        event.setCancelled(true);
+
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+
+        pendingFloorChange.remove(event.getPlayer().getUniqueId());
 
     }
 

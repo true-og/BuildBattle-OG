@@ -379,7 +379,7 @@ Menu:
       Floor:
         Item:
           Name: "&bChange floor material"
-          Lore: "Drag block here to change floor"
+          Lore: "Click to change floor"
         Changed: "%plugin_prefix% Floor material changed!"
       Time:
         Inventory: "&bSet time"
