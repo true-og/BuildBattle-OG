@@ -70,123 +70,12 @@ Commands:
 
 
 #
-# In-Game scoreboard messages
+# Scoreboard messages
 #
-# Please do not use more chars than the scoreboard can handle!
-# Scoreboard supports up to 122 chars for 1.14+ and 48 chars for 1.13- (COLOR CODES INCLUDED.)
-# Placeholders:
-# https://wiki.plugily.xyz/REPLACEWITHPROJECTNAME/placeholders/language
+# Sidebar lines are built by the plugin in the TrueOG style and fit 1.8 clients.
 Scoreboard:
-  Title: "&a&l%plugin_name%"
+  Title: "&4♥ &a&lBuildBattle&c&l-OG &4♥"
   Theme-Unknown: "&c???"
-  Content:
-    Waiting:
-      - "■ Mode | %arena_type%"
-      - ""
-      - "■ Players | %arena_players_size%"
-      - ""
-      - "■ Minimum Players | %arena_min_players%"
-      - ""
-      - "   www.plugily.xyz"
-    Starting:
-      - "■ Mode | %arena_type%"
-      - ""
-      - "■ Starting In | %arena_time%"
-      - ""
-      - "■ Players | %arena_players_size%"
-      - ""
-      - "■ Minimum Players | %arena_min_players%"
-      - ""
-      - "   www.plugily.xyz"
-    # Contents of scoreboard while ingame
-    In-Game:
-      Classic:
-        - "■ Theme | %arena_theme%"
-        - "&f"
-        - "■ Mode | %arena_type%"
-        - "&f"
-        - "■ Time Left | %arena_time%"
-        - ""
-        - "■ Players | %arena_players_size%"
-        - "&f"
-        - "■ Arena | %arena_name%"
-        - ""
-        - "   www.plugily.xyz"
-      Teams:
-        - "■ Theme | %arena_theme%"
-        - "&f"
-        - "■ Mode | %arena_type%"
-        - "&f"
-        - "■ Time Left | %arena_time%"
-        - ""
-        - "■ Teammate | "
-        - "%arena_teammates%"
-        - "&f"
-        - "■ Arena | %arena_name%"
-        - ""
-        - "   www.plugily.xyz"
-      Guess-The-Build:
-        - "■ Mode | %arena_type%"
-        - "&f"
-        - "■ Builder | %arena_builder%"
-        - ""
-        - "■ Leaders |"
-        - "%arena_place_member_1% | %arena_place_points_1%"
-        - "%arena_place_member_2% | %arena_place_points_2%"
-        - "%arena_place_member_3% | %arena_place_points_3%"
-        - ""
-        - "■ Time Left | %arena_time%"
-        - ""
-        - "■ Theme | %arena_theme%"
-        - ""
-        - "   www.plugily.xyz"
-      Guess-The-Build-Waiting:
-        - "■ Mode | %arena_type%"
-        - "&f"
-        - "■ Leaders |"
-        - "%arena_place_member_1% | %arena_place_points_1%"
-        - "%arena_place_member_2% | %arena_place_points_2%"
-        - "%arena_place_member_3% | %arena_place_points_3%"
-        - ""
-        - "■ Start in | %arena_time%"
-        - ""
-        - "   www.plugily.xyz"
-    # Contents of scoreboard while state is ending
-    Ending:
-      Classic:
-        - "■ Mode | %arena_type%"
-        - "&f"
-        - "&cGAME ENDED"
-        - ""
-        - "&f"
-        - "&f"
-        - ""
-        - "   www.plugily.xyz"
-      Guess-The-Build:
-        - "■ Mode | %arena_type%"
-        - "&f"
-        - "■ 1. %arena_place_member_1% | %arena_place_points_1%"
-        - "■ 2. %arena_place_member_2% | %arena_place_points_2%"
-        - "■ 3. %arena_place_member_3% | %arena_place_points_3%"
-        - "■ 4. %arena_place_member_4% | %arena_place_points_4%"
-        - "■ 5. %arena_place_member_5% | %arena_place_points_5%"
-        - "■ 6. %arena_place_member_6% | %arena_place_points_6%"
-        - "■ 7. %arena_place_member_7% | %arena_place_points_7%"
-        - "■ 8. %arena_place_member_8% | %arena_place_points_8%"
-        - "■ 9. %arena_place_member_9% | %arena_place_points_9%"
-        - "■ 10. %arena_place_member_10% | %arena_place_points_10%"
-        - "&f"
-        - "   www.plugily.xyz"
-    # Contents of scoreboard while state is restarting
-    Restarting:
-      - "■ Mode | %arena_type%"
-      - "&f"
-      - "&cRESTARTING GAME"
-      - ""
-      - "&f"
-      - "&f"
-      - ""
-      - "   www.plugily.xyz"
 
 #
 # Bossbar messages

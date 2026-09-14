@@ -3,7 +3,7 @@
 TrueOG Network's fork of [Plugily-Projects/BuildBattle](https://github.com/Plugily-Projects/BuildBattle) — a
 building competition minigame for Purpur `1.19.4`, using `MyWorlds` for arena world management.
 
-Current version: `5.1.10` ([changelog](CHANGELOG.md)).
+Current version: `5.1.11` ([changelog](CHANGELOG.md)).
 
 Two game modes ship in the box. In **classic** mode players build on their own plot against a theme, then vote
 on each other's builds. In **Guess The Build** one player builds while everyone else races to guess the theme
@@ -196,7 +196,7 @@ moment a game's points are awarded:
 | `MyWorlds` / `My_Worlds` | **Required.** Arena world management, per-world inventories and chat. |
 | `Utilities-OG` | Registers the `<bb_score>` and `<bb_rank>` [placeholders](#placeholders). `language.yml` values containing a MiniMessage tag or the `&*` rainbow code render through TrueOG's colorizer, enabling `<#rrggbb>` hex, `<gradient:...>`, named colours and decorations. Plain `&`-coded values are passed through byte-for-byte, so nothing shipped changes appearance. Without the plugin, all values keep their default formatting. |
 | `Chat-OG` | Arena chat is scoped per world, styled by BuildBattle-OG's own formatter, and mirrored to the game's Discord channel, provided worlds follow the [naming convention](#world-naming) and `discord.games.BB` exists in Chat-OG's config. The formatter shows the player count in the lobby, `VOTE` and `JUDGING` during the voting phases, and the theme while building — never in Guess The Build, where the theme is the answer. |
-| `Scoreboard-OG` | With `1.2.0` or newer, the arena sidebar is drawn through Scoreboard-OG's sidebar API instead of MiniGamesBox's packet board. The network board returns on its own when the player leaves the arena, and `/togglescoreboard` is honoured. Older builds, or no Scoreboard-OG at all, keep the MiniGamesBox board. The `Scoreboard.*` keys in `language.yml` feed both. |
+| `Scoreboard-OG` | With `1.2.0` or newer, the arena sidebar is drawn through Scoreboard-OG's sidebar API instead of MiniGamesBox's packet board. The network board returns on its own when the player leaves the arena, and `/togglescoreboard` is honoured. Older builds, or no Scoreboard-OG at all, keep the MiniGamesBox board. Both draw the same code-built card in the TrueOG style (`♥ BuildBattle-OG ♥` title, blank-separated blocks, `true-og.net` footer) with every line within 16 legacy characters for 1.8 clients; only `Scoreboard.Title` and `Scoreboard.Theme-Unknown` in `language.yml` are still read. |
 | `GameModeInventories-OG` | Its inventory swap is suspended for everyone inside arena worlds, by any route in, and for one tick after leaving, so the survival inventory is never filed under an arena gamemode. Builders additionally get a creative exemption scoped to arena worlds at runtime. Do **not** grant regular players `gamemodeinventories.toggle` or `gamemodeinventories.anywhere`, and keep arena worlds **out** of `restrict_adventure_worlds` — guessers are put in adventure mode. |
 | `Spawn-OG` | Keep arena worlds **out** of its `login-safety.worlds` list so reconnect handling stays with BuildBattle-OG. |
 | `VotingPlugin` | Keeps `/vote` and `/v` everywhere outside BuildBattle worlds; BuildBattle-OG never declares either label in plugin.yml. |

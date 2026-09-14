@@ -7,6 +7,15 @@ https://github.com/Plugily-Projects/BuildBattle.
 
 ### Changes
 
+- The arena sidebar now follows the Scoreboard-OG network board's look: a
+  `♥ BuildBattle-OG ♥` title, one blank line between labelled blocks and a
+  `true-og.net` footer. The lobby card shows the mode, map, player count and
+  countdown; Classic and Teams show the theme, phase, clock, player count or
+  teammate and the plot being judged; Guess The Build shows the builder, the
+  theme the viewer may know, round, clock, own points and the leader; the end
+  card names the winner. Lines are built in code, so the `Scoreboard.Content`
+  lists in `language.yml` are no longer read, and every line stays within 16
+  legacy characters so 1.8 clients on ViaBackwards see it uncut.
 - Arena worlds no longer come up as vanilla terrain. The shaded MiniGamesBox
   deserializes arena locations with `Bukkit.createWorld(new WorldCreator(name))`
   for any world that is not loaded, so the first boot after 5.1.10 shipped the
