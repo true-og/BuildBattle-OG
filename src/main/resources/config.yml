@@ -227,21 +227,29 @@ Time-Manager:
     # Total build time
     In-Game: 120
   Classic:
+    # Build rounds per match; each round gets its own theme and plot vote, points add up.
+    Rounds: 3
+    # Pick each round's theme at random from themes.yml instead of holding a vote.
+    Random-Theme: true
     Voting:
       # Total time of voting for themes before starting
       Theme: 25
       # Total time of voting per player plot
-      Plot: 20
-    # Total build time
-    In-Game: 480
+      Plot: 15
+    # Build time per round
+    In-Game: 150
   Teams:
+    # Build rounds per match; each round gets its own theme and plot vote, points add up.
+    Rounds: 3
+    # Pick each round's theme at random from themes.yml instead of holding a vote.
+    Random-Theme: true
     Voting:
       # Total time of voting for themes before starting
       Theme: 25
       # Total time of voting per player plot
-      Plot: 20
-    # Total build time
-    In-Game: 540
+      Plot: 15
+    # Build time per round
+    In-Game: 180
 
 
 Mob:
@@ -312,6 +320,16 @@ Plot:
   # Allows players to move outside an arena while building.
   # default false - moving outside plot will teleport back
   Move-Outside: false
+  # Wall around the plot a player is building in, shown only to them; the world is never changed.
+  Border:
+    # Draw the wall. Off, the limit below still holds and a builder past it is pulled back.
+    Enabled: true
+    # Blocks a builder may step outside the plot before the wall.
+    Grace: 3
+    # Wall blocks within this many blocks of the builder are drawn.
+    Distance: 8
+    # RAINBOW_GLASS, RAINBOW_WOOL, RAINBOW_TERRACOTTA, RAINBOW_CONCRETE or any block name.
+    Block: RAINBOW_GLASS
 
 
 Update-Notifier:
@@ -327,5 +345,5 @@ Update-Notifier:
 # Really, don't edit ;p
 # You edited it, huh? Next time hurt yourself!
 Do-Not-Edit:
-  File-Version: 1
+  File-Version: 2
   Core-Version: 6

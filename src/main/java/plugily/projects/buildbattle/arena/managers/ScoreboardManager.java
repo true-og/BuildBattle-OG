@@ -232,6 +232,13 @@ public class ScoreboardManager extends PluginScoreboardManager {
         lines.add("&6Phase:");
         lines.add("&f" + phaseName());
         lines.add("&6Time: &f" + TrueOGBoard.clock(arena.getTimer()));
+        if (arena instanceof BuildArena && ((BuildArena) arena).getRounds() > 1) {
+
+            BuildArena build = (BuildArena) arena;
+            lines.add("&6Round: &f" + build.getRound() + "/" + build.getRounds());
+
+        }
+
         lines.add("");
 
         if (arena.getArenaType() == BaseArena.ArenaType.TEAM) {

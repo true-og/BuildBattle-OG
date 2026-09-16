@@ -57,9 +57,14 @@ public class InGameState extends PluginInGameState {
         switch (pluginArena.getArenaInGameState()) {
 
             case THEME_VOTING:
+                if (pluginArena.isRandomTheme() && pluginArena.getTheme() == null) {
+
+                    pluginArena.setTheme(pluginArena.pickRandomTheme());
+
+                }
+
                 if (arena.getTimer() <= 0 || pluginArena.getTheme() != null) {
 
-                    // may consider start to build message...
                     pluginArena.setArenaInGameState(BaseArena.ArenaInGameState.BUILD_TIME);
 
                     setArenaTimer(getPlugin().getConfig()
@@ -68,10 +73,17 @@ public class InGameState extends PluginInGameState {
                     if (pluginArena.getVotePoll() != null && pluginArena.getTheme() == null) {
 
                         pluginArena.setTheme(pluginArena.getVotePoll().getVotedTheme());
-                        new MessageBuilder("IN_GAME_MESSAGES_PLOT_GTB_THEME_NAME").asKey().arena(pluginArena)
-                                .sendArena();
 
                     }
+
+                    if (pluginArena.getTheme() != null) {
+
+                        pluginArena.getPlayedThemes().add(pluginArena.getTheme());
+
+                    }
+
+                    new MessageBuilder("IN_GAME_MESSAGES_PLOT_ROUND_START").asKey().arena(pluginArena).sendArena();
+                    new TitleBuilder("IN_GAME_MESSAGES_PLOT_ROUND_TITLE").asKey().arena(pluginArena).sendArena();
 
                     for (Player player : pluginArena.getPlayersLeft()) {
 
@@ -123,7 +135,11 @@ public class InGameState extends PluginInGameState {
                 if (arena.getTimer() <= 0) {
 
                     calculatePlotResults(pluginArena);
-                    if (pluginArena.getQueue().isEmpty()) {
+                    if (pluginArena.getQueue().isEmpty() && !pluginArena.isLastRound()) {
+
+                        startNextRound(pluginArena);
+
+                    } else if (pluginArena.getQueue().isEmpty()) {
 
                         pluginArena.calculateWinnerPlot();
                         adjustStatistics(pluginArena);
@@ -158,7 +174,7 @@ public class InGameState extends PluginInGameState {
 
         Plot votingPlot = pluginArena.getVotingPlot();
 
-        if (votingPlot == null || votingPlot.getPoints() != 0) {
+        if (votingPlot == null || votingPlot.getRoundPoints() != 0) {
 
             return;
 
@@ -250,6 +266,36 @@ public class InGameState extends PluginInGameState {
 
     }
 
+    // Judging is over but rounds remain: wipe the plots and send everyone home.
+    private void startNextRound(BuildArena pluginArena) {
+
+        pluginArena.nextRound();
+        for (Player player : pluginArena.getPlayersLeft()) {
+
+            // Vote items would otherwise become building blocks in creative.
+            player.getInventory().clear();
+            player.closeInventory();
+
+        }
+
+        Location spectatorLoc = pluginArena.getSpectatorLocation();
+        if (spectatorLoc != null) {
+
+            for (Player spectator : pluginArena.getSpectators()) {
+
+                VersionUtils.teleport(spectator, spectatorLoc);
+
+            }
+
+        }
+
+        pluginArena.getPlotManager().teleportToPlots();
+        setArenaTimer(getPlugin().getConfig()
+                .getInt("Time-Manager." + pluginArena.getArenaType().getPrefix() + ".Voting.Theme"));
+        pluginArena.setArenaInGameState(BaseArena.ArenaInGameState.THEME_VOTING);
+
+    }
+
     private void handleThemeVoting(BuildArena pluginArena) {
 
         for (Player player : pluginArena.getPlayersLeft()) {
@@ -304,7 +350,7 @@ public class InGameState extends PluginInGameState {
 
         if (votingPlot != null) {
 
-            if (votingPlot.getPoints() == 0) {
+            if (votingPlot.getRoundPoints() == 0) {
 
                 List<Plot> plotsVoted = new ArrayList<>();
                 for (Player player : pluginArena.getPlayersLeft()) {

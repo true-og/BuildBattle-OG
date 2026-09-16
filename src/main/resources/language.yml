@@ -216,6 +216,9 @@ In-Game:
           Own: "%color_chat_issue%%plugin_prefix% You can't vote for your plot!"
         Success: "%plugin_prefix% Voted %value% successfully!"
         Winner: "5,20,5;%plugin_prefix% WINNER: %value%"
+      Round:
+        Start: "%plugin_prefix% Round %arena_round%/%arena_rounds%! The theme is %arena_theme%"
+        Title: "5,40,5;Round %arena_round%/%arena_rounds%;Theme: %arena_theme%"
       Guess-The-Build:
         Builder: "Builder: %arena_builder%"
         Round: "Round: %number%/%arena_gtb_rounds%"
@@ -464,5 +467,5 @@ Leaderboard:
 # Really, don't edit ;p
 # You edited it, huh? Next time hurt yourself!
 Do-Not-Edit:
-  File-Version: 3
+  File-Version: 4
   Core-Version: 2

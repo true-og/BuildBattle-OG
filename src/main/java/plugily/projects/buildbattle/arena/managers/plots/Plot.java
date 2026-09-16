@@ -56,6 +56,8 @@ public class Plot {
     private final BaseArena arena;
     private Cuboid cuboid;
     private int points = 0;
+    // Points from the round being judged; guards against double counting.
+    private int roundPoints = 0;
     private List<Player> members = new ArrayList<>();
     private Time time = Time.WORLD_TIME;
     private final Biome plotDefaultBiome;
@@ -222,6 +224,7 @@ public class Plot {
 
         resetPlot();
         points = 0;
+        roundPoints = 0;
         members.clear();
         particles.clear();
 
@@ -360,6 +363,20 @@ public class Plot {
     public void addPoints(int points) {
 
         this.points += points;
+        roundPoints += points;
+
+    }
+
+    public int getRoundPoints() {
+
+        return roundPoints;
+
+    }
+
+    // Match points stay; the next round's plot vote starts from zero.
+    public void resetRoundPoints() {
+
+        roundPoints = 0;
 
     }
 

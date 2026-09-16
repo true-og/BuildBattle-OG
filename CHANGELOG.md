@@ -3,6 +3,52 @@
 All notable OG-fork changes are documented here. Upstream history is at
 https://github.com/Plugily-Projects/BuildBattle.
 
+## 5.1.12 - 2026-09-16
+
+### Changes
+
+- Classic and Teams matches are played in rounds. `Time-Manager.<Classic|Teams>.Rounds`
+  (default 3) sets how many builds a match holds; each round announces its own
+  theme, runs `In-Game` seconds of building, then walks every plot for a vote.
+  Plots are wiped between rounds, the votes add up, and the highest total after
+  the last round wins. `Rounds: 1` is the old single-build flow.
+- `Time-Manager.<Classic|Teams>.Random-Theme` (default on) lets the plugin draw
+  each round's theme at random from `themes.yml` instead of holding the vote, so
+  building starts at once. Off, the vote runs before every round. Either way a
+  theme is never repeated within a match while unused ones remain.
+- Shipped `In-Game` shortened to 150 seconds for Classic and 180 for Teams to
+  fit three rounds. The config migration only adds the two new keys to an
+  existing `config.yml`; lower `In-Game` there by hand.
+- The Classic theme list in `themes.yml` grows from 60 to 146 entries, leaning
+  on concrete objects, animals, vehicles and food that fit a short round.
+- Round announcements are the new `In-Game.Messages.Plot.Round.Start` and
+  `.Title` keys in `language.yml`, added to an existing file by the language
+  migration; `%arena_round%` and `%arena_rounds%` placeholders resolve in
+  Classic, Teams and Guess The Build. The sidebar shows `Round: 1/3` and the
+  boss bar phase reads `Building 1/3` whenever a match has more than one round.
+- Plot vote shortened from 20 to 15 seconds per plot in the shipped `config.yml`
+  (`Time-Manager.<Classic|Teams>.Voting.Plot`); the migration leaves an
+  existing value alone.
+- Builders are no longer teleported to the plot spawn for straying five blocks
+  past the plot. Each player now has `Plot.Border.Grace` (default 3) blocks of
+  room outside their plot, and the one-block shell beyond that is drawn for
+  them alone as a rainbow stained-glass wall (`Plot.Border.Block`, also
+  `RAINBOW_WOOL`, `RAINBOW_TERRACOTTA`, `RAINBOW_CONCRETE` or any block) through
+  client-side block changes, within `Plot.Border.Distance` (default 8) blocks of
+  them. Nothing in the world changes and other players never see it. The wall
+  covers all six faces, skips real solid blocks and is only drawn during build
+  time; in Guess The Build it surrounds the plot being built. A move that would
+  still end past the wall is cancelled, and anyone found beyond it by any other
+  route (teleport, vehicle, the three-second sweep) is pulled to the nearest
+  legal spot at their own height, or to the plot spawn if that spot is blocked.
+  `Plot.Border.Enabled: false` hides the wall and keeps the limit;
+  `Plot.Move-Outside: true` still lifts it altogether. Derived from
+  EternalCombat's border module (Apache License 2.0) via Duels-OG, with the
+  notice kept in `PlotBorderManager`; the config migration adds the
+  `Plot.Border` block.
+- `LanguageMigrator` no longer falls through from the language.yml update into
+  the heads main-menu update.
+
 ## 5.1.11 - 2026-09-14
 
 ### Changes

@@ -3,7 +3,7 @@
 TrueOG Network's fork of [Plugily-Projects/BuildBattle](https://github.com/Plugily-Projects/BuildBattle) — a
 building competition minigame for Purpur `1.19.4`, using `MyWorlds` for arena world management.
 
-Current version: `5.1.11` ([changelog](CHANGELOG.md)).
+Current version: `5.1.12` ([changelog](CHANGELOG.md)).
 
 Two game modes ship in the box. In **classic** mode players build on their own plot against a theme, then vote
 on each other's builds. In **Guess The Build** one player builds while everyone else races to guess the theme
@@ -155,6 +155,52 @@ MyWorlds:
   # Pin the bundled void generator onto every arena world so unsaved chunks stay void.
   Void-Generator: true
 ```
+
+Classic and Teams matches run in rounds, set per mode under `Time-Manager` in `config.yml`:
+
+```yaml
+Time-Manager:
+  Classic:
+    # Build rounds per match; each round gets its own theme and plot vote, points add up.
+    Rounds: 3
+    # Pick each round's theme at random from themes.yml instead of holding a vote.
+    Random-Theme: true
+    Voting:
+      # Total time of voting for themes before starting
+      Theme: 25
+      # Total time of voting per player plot
+      Plot: 15
+    # Build time per round
+    In-Game: 150
+```
+
+Each round announces its theme (drawn at random from the mode's list in `themes.yml`, or voted on for
+`Voting.Theme` seconds when `Random-Theme` is off; a theme is never repeated within a match), runs the build
+clock, then walks every plot for a vote. Plots are wiped between rounds, votes add up across them, and the
+highest total after the last round wins. `Rounds: 1` is the single-build upstream flow.
+
+While building, each player is held to their plot plus a grace margin (`Plot.Border` in `config.yml`):
+
+```yaml
+Plot:
+  # Wall around the plot a player is building in, shown only to them; the world is never changed.
+  Border:
+    # Draw the wall. Off, the limit below still holds and a builder past it is pulled back.
+    Enabled: true
+    # Blocks a builder may step outside the plot before the wall.
+    Grace: 3
+    # Wall blocks within this many blocks of the builder are drawn.
+    Distance: 8
+    # RAINBOW_GLASS, RAINBOW_WOOL, RAINBOW_TERRACOTTA, RAINBOW_CONCRETE or any block name.
+    Block: RAINBOW_GLASS
+```
+
+The wall is the one-block shell just outside that margin, sent to the builder as client-side block
+changes (`Player#sendMultiBlockChange`) and restored as they move away, so nothing in the world changes
+and nobody else sees it. It is drawn during build time only, on all six faces, and skips real solid blocks.
+A move that would still end beyond the wall is cancelled, and anyone found past it by any other route
+(a teleport, a vehicle) is pulled to the nearest legal spot at their own height, or to the plot spawn
+when that spot is blocked. `Plot.Move-Outside: true` turns the whole thing off.
 
 Arenas live in `arenas.yml`:
 
@@ -311,6 +357,12 @@ Tigerpanzer_02, Plajer, TomTheDeveloper and contributors, distributed under the 
 | [ScoreboardLib](https://github.com/TigerHix/ScoreboardLib/) | [TigerHix](https://github.com/TigerHix)               | [LGPLv3](https://github.com/TigerHix/ScoreboardLib/blob/master/LICENSE)            |
 | [HikariCP](https://github.com/brettwooldridge/HikariCP)     | [brettwooldridge](https://github.com/brettwooldridge) | [Apache License 2.0](https://github.com/brettwooldridge/HikariCP/blob/dev/LICENSE) |
 | [Commons Box](https://github.com/Plajer/Commons-Box)        | [Plajer](https://github.com/Plajer)                   | [GPLv3](https://github.com/Plajer/Commons-Box/blob/master/LICENSE.md)              |
+
+The plot wall (`PlotBorderManager`) is derived from the border module of
+[EternalCombat](https://github.com/EternalCodeTeam/EternalCombat) by the EternalCode Team, by way of the
+TrueOG [Duels-OG](https://github.com/true-og/Duels-OG) adaptation. Both are licensed under the
+[Apache License 2.0](https://github.com/EternalCodeTeam/EternalCombat/blob/master/LICENSE); the file keeps
+that notice and lists the changes made.
 
 ## Attributions
 

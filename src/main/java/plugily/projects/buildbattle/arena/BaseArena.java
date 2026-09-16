@@ -305,29 +305,20 @@ public class BaseArena extends PluginArena {
 
             for (Player player : getPlayersLeft()) {
 
-                Plot buildPlot = null;
+                if (this instanceof GuessArena) {
 
-                if (this instanceof BuildArena) {
+                    Plot buildPlot = ((GuessArena) this).getBuildPlot();
+                    if (buildPlot != null) {
 
-                    buildPlot = getPlotFromPlayer(player);
+                        player.setPlayerWeather(buildPlot.getWeatherType());
+                        player.setPlayerTime(Plot.Time.format(buildPlot.getTime(), player.getWorld().getTime()), false);
 
-                } else if (this instanceof GuessArena) {
-
-                    buildPlot = ((GuessArena) this).getBuildPlot();
-                    player.setPlayerWeather(buildPlot.getWeatherType());
-                    player.setPlayerTime(Plot.Time.format(buildPlot.getTime(), player.getWorld().getTime()), false);
+                    }
 
                 }
 
-                if (buildPlot != null && buildPlot.getCuboid() != null
-                        && !buildPlot.getCuboid().isInWithMarge(player.getLocation(), 5))
-                {
-
-                    VersionUtils.teleport(player, buildPlot.getTeleportLocation());
-                    new MessageBuilder("IN_GAME_MESSAGES_PLOT_PERMISSION_OUTSIDE").asKey().arena(this).player(player)
-                            .sendPlayer();
-
-                }
+                // Past the wall by any route: pulled to the nearest legal spot.
+                plugin.getPlotBorderManager().enforce(player);
 
             }
 

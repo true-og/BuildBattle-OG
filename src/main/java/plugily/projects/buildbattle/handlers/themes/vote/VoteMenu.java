@@ -72,6 +72,15 @@ public class VoteMenu {
 
         List<String> themesTotal = new ArrayList<>(
                 plugin.getThemeManager().getThemes(ThemeManager.GameThemes.getByArenaType(arena.getArenaType())));
+        // Earlier rounds' themes are off the ballot while any others remain.
+        List<String> unplayed = new ArrayList<>(themesTotal);
+        unplayed.removeAll(arena.getPlayedThemes());
+        if (!unplayed.isEmpty()) {
+
+            themesTotal = unplayed;
+
+        }
+
         // random themes order
         Collections.shuffle(themesTotal);
         List<String> randomThemes = new ArrayList<>(themesTotal.size());

@@ -39,7 +39,7 @@ import java.io.File;
 public class LanguageMigrator {
 
     public enum PluginFileVersion {
-        /* ARENA_SELECTOR(0), */ BUNGEE(1), CONFIG(1), LANGUAGE(3), /* LEADERBOARDS(0), */ MYSQL(1), PERMISSIONS(1),
+        /* ARENA_SELECTOR(0), */ BUNGEE(1), CONFIG(2), LANGUAGE(4), /* LEADERBOARDS(0), */ MYSQL(1), PERMISSIONS(1),
         /* SIGNS(0), */ SPECIAL_ITEMS(1), SPECTATOR(1)/* , STATS(0) */, MAIN_MENU(1);
 
         private final int version;
@@ -113,6 +113,38 @@ public class LanguageMigrator {
 
         switch (pluginFileVersion) {
 
+            case CONFIG:
+                switch (version) {
+
+                    case 1:
+                        // Round keys only; shorten In-Game by hand.
+                        for (String mode : new String[] { "  Classic:", "  Teams:" }) {
+
+                            MigratorUtils.insertAfterLine(file, mode,
+                                    "    # Build rounds per match; each round gets its own theme and plot vote, points add up.\n"
+                                            + "    Rounds: 3\n"
+                                            + "    # Pick each round's theme at random from themes.yml instead of holding a vote.\n"
+                                            + "    Random-Theme: true");
+
+                        }
+
+                        MigratorUtils.insertAfterLine(file, "Move-Outside: false",
+                                "  # Wall around the plot a player is building in, shown only to them; the world is never changed.\n"
+                                        + "  Border:\n"
+                                        + "    # Draw the wall. Off, the limit below still holds and a builder past it is pulled back.\n"
+                                        + "    Enabled: true\n"
+                                        + "    # Blocks a builder may step outside the plot before the wall.\n"
+                                        + "    Grace: 3\n"
+                                        + "    # Wall blocks within this many blocks of the builder are drawn.\n"
+                                        + "    Distance: 8\n"
+                                        + "    # RAINBOW_GLASS, RAINBOW_WOOL, RAINBOW_TERRACOTTA, RAINBOW_CONCRETE or any block name.\n"
+                                        + "    Block: RAINBOW_GLASS");
+                        break;
+                    default:
+                        break;
+
+                }
+                break;
             case LANGUAGE:
                 switch (version) {
 
@@ -145,10 +177,17 @@ public class LanguageMigrator {
                         MigratorUtils.insertAfterLine(file, "Motd:",
                                 "    Starting: \"&6&lStarting\"\n" + "    Restarting: \"&4&lRestarting\"");
                         break;
+                    case 3:
+                        MigratorUtils.insertAfterLine(file, "Winner: \"5,20,5;%plugin_prefix% WINNER: %value%\"",
+                                "      Round:\n"
+                                        + "        Start: \"%plugin_prefix% Round %arena_round%/%arena_rounds%! The theme is %arena_theme%\"\n"
+                                        + "        Title: \"5,40,5;Round %arena_round%/%arena_rounds%;Theme: %arena_theme%\"");
+                        break;
                     default:
                         break;
 
                 }
+                break;
             case MAIN_MENU:
                 switch (version) {
 

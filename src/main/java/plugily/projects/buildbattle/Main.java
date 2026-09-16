@@ -38,6 +38,7 @@ import plugily.projects.buildbattle.arena.ArenaEvents;
 import plugily.projects.buildbattle.arena.ArenaManager;
 import plugily.projects.buildbattle.arena.ArenaRegistry;
 import plugily.projects.buildbattle.arena.BaseArena;
+import plugily.projects.buildbattle.arena.managers.plots.PlotBorderManager;
 import plugily.projects.buildbattle.arena.managers.plots.PlotMenuHandler;
 import plugily.projects.buildbattle.arena.vote.VoteEvents;
 import plugily.projects.buildbattle.arena.vote.VoteItems;
@@ -93,6 +94,7 @@ public class Main extends PluginMain {
     private ArenaWorldProvisioner arenaWorldProvisioner;
     private PreJoinLocationStore preJoinLocationStore;
     private BuilderCreativeManager builderCreativeManager;
+    private PlotBorderManager plotBorderManager;
     private GameModeInventoriesGuard gmiGuard;
     private ILanguageManager languageManager;
     private BuildBattleScores buildBattleScores;
@@ -235,6 +237,7 @@ public class Main extends PluginMain {
         arenaManager = new ArenaManager(this);
         gmiGuard = new GameModeInventoriesGuard(this, player -> isArenaWorld(player.getWorld()));
         builderCreativeManager = new BuilderCreativeManager(this);
+        plotBorderManager = new PlotBorderManager(this);
         // Load worlds first, or MiniGamesBox generates vanilla ones on register.
         arenaWorldProvisioner = new ArenaWorldProvisioner(this);
         arenaWorldProvisioner.provisionArenaWorlds();
@@ -342,6 +345,12 @@ public class Main extends PluginMain {
     public BuilderCreativeManager getBuilderCreativeManager() {
 
         return builderCreativeManager;
+
+    }
+
+    public PlotBorderManager getPlotBorderManager() {
+
+        return plotBorderManager;
 
     }
 
@@ -585,6 +594,12 @@ public class Main extends PluginMain {
         if (builderCreativeManager != null) {
 
             builderCreativeManager.revokeAll();
+
+        }
+
+        if (plotBorderManager != null) {
+
+            plotBorderManager.clearAll();
 
         }
 

@@ -25,11 +25,13 @@ import org.jetbrains.annotations.NotNull;
 import plugily.projects.buildbattle.arena.managers.plots.Plot;
 import plugily.projects.buildbattle.arena.states.build.InGameState;
 import plugily.projects.buildbattle.arena.states.build.StartingState;
+import plugily.projects.buildbattle.handlers.themes.ThemeManager;
 import plugily.projects.buildbattle.handlers.themes.vote.VoteMenu;
 import plugily.projects.buildbattle.handlers.themes.vote.VotePoll;
 import plugily.projects.minigamesbox.api.arena.IArenaState;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +44,9 @@ public class BuildArena extends BaseArena {
     private final Queue<Plot> queue = new LinkedList<>();
     private Plot votingPlot;
     private VoteMenu voteMenu;
+    private int round = 1;
+    // Themes built so far this match, so no round repeats one.
+    private final List<String> playedThemes = new ArrayList<>();
 
     public BuildArena(String id) {
 
@@ -67,6 +72,9 @@ public class BuildArena extends BaseArena {
     public void cleanUpArena() {
 
         votingPlot = null;
+        queue.clear();
+        round = 1;
+        playedThemes.clear();
         if (voteMenu != null) {
 
             voteMenu.resetPoll();
@@ -74,6 +82,78 @@ public class BuildArena extends BaseArena {
         }
 
         super.cleanUpArena();
+
+    }
+
+    public int getRound() {
+
+        return round;
+
+    }
+
+    // Build rounds per match from Time-Manager.<type>.Rounds, never below one.
+    public int getRounds() {
+
+        return Math.max(1, getPlugin().getConfig().getInt("Time-Manager." + getArenaType().getPrefix() + ".Rounds", 3));
+
+    }
+
+    public boolean isLastRound() {
+
+        return round >= getRounds();
+
+    }
+
+    // Time-Manager.<type>.Random-Theme: the plugin picks each theme, no vote.
+    public boolean isRandomTheme() {
+
+        return getPlugin().getConfig().getBoolean("Time-Manager." + getArenaType().getPrefix() + ".Random-Theme", true);
+
+    }
+
+    public List<String> getPlayedThemes() {
+
+        return playedThemes;
+
+    }
+
+    // An unused theme from this type's list, or null when the list is empty.
+    public String pickRandomTheme() {
+
+        List<String> themes = new ArrayList<>(
+                getPlugin().getThemeManager().getThemes(ThemeManager.GameThemes.getByArenaType(getArenaType())));
+        List<String> unplayed = new ArrayList<>(themes);
+        unplayed.removeAll(playedThemes);
+        List<String> pool = unplayed.isEmpty() ? themes : unplayed;
+        return pool.isEmpty() ? null : pool.get(ThreadLocalRandom.current().nextInt(pool.size()));
+
+    }
+
+    // Closes the judged round: every occupied plot is cleared for a new theme.
+    public void nextRound() {
+
+        round++;
+        votingPlot = null;
+        queue.clear();
+        setTheme(null);
+        for (Plot plot : getPlotManager().getPlots()) {
+
+            if (plot.getMembers().isEmpty()) {
+
+                continue;
+
+            }
+
+            plot.resetPlot();
+            plot.resetRoundPoints();
+
+        }
+
+        if (voteMenu != null) {
+
+            voteMenu.resetPoll();
+
+        }
 
     }
 

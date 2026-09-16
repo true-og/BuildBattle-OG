@@ -8,6 +8,7 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
 import plugily.projects.buildbattle.arena.BaseArena;
+import plugily.projects.buildbattle.arena.BuildArena;
 import plugily.projects.buildbattle.handlers.misc.TrueOGBoard;
 import plugily.projects.minigamesbox.api.arena.IArenaState;
 import plugily.projects.minigamesbox.api.arena.IPluginArena;
@@ -112,15 +113,29 @@ public class PhaseBossbarManager extends BossbarManager {
         switch (arena.getArenaInGameState()) {
 
             case THEME_VOTING:
-                return guess ? "Builder picks a theme" : "Theme vote";
+                return guess ? "Builder picks a theme" : "Theme vote" + round();
             case BUILD_TIME:
-                return guess ? "Guess the build" : "Building";
+                return guess ? "Guess the build" : "Building" + round();
             case PLOT_VOTING:
-                return guess ? "Next round in" : "Plot vote";
+                return guess ? "Next round in" : "Plot vote" + round();
             default:
                 return "Starting";
 
         }
+
+    }
+
+    // " 2/3" for a multi-round Classic or Teams match, otherwise nothing.
+    private String round() {
+
+        if (!(arena instanceof BuildArena) || ((BuildArena) arena).getRounds() <= 1) {
+
+            return "";
+
+        }
+
+        BuildArena build = (BuildArena) arena;
+        return " " + build.getRound() + "/" + build.getRounds();
 
     }
 

@@ -107,6 +107,10 @@ public class MessageInitializer {
                 new Message("In-Game.Messages.Plot.Voting.Success", ""));
         messageManager.registerMessage("IN_GAME_MESSAGES_PLOT_VOTING_WINNER",
                 new Message("In-Game.Messages.Plot.Voting.Winner", ""));
+        messageManager.registerMessage("IN_GAME_MESSAGES_PLOT_ROUND_START",
+                new Message("In-Game.Messages.Plot.Round.Start", ""));
+        messageManager.registerMessage("IN_GAME_MESSAGES_PLOT_ROUND_TITLE",
+                new Message("In-Game.Messages.Plot.Round.Title", ""));
         messageManager.registerMessage("IN_GAME_MESSAGES_PLOT_GTB_BUILDER",
                 new Message("In-Game.Messages.Plot.Guess-The-Build.Builder", ""));
         messageManager.registerMessage("IN_GAME_MESSAGES_PLOT_GTB_ROUND",

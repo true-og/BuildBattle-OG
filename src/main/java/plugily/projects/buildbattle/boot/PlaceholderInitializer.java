@@ -785,6 +785,87 @@ public class PlaceholderInitializer {
                     }
 
                 });
+        placeholderManager.registerPlaceholder(
+                new Placeholder("round", Placeholder.PlaceholderType.ARENA, Placeholder.PlaceholderExecutor.ALL)
+                {
+
+                    @Override
+                    public String getValue(Player player, IPluginArena arena) {
+
+                        return getRound(arena);
+
+                    }
+
+                    @Override
+                    public String getValue(IPluginArena arena) {
+
+                        return getRound(arena);
+
+                    }
+
+                    // The running round of either mode.
+                    @Nullable
+                    private String getRound(IPluginArena arena) {
+
+                        BaseArena pluginArena = arenaRegistry.getArena(arena.getId());
+                        if (pluginArena instanceof GuessArena) {
+
+                            return String.valueOf(((GuessArena) pluginArena).getRound());
+
+                        }
+
+                        if (pluginArena instanceof BuildArena) {
+
+                            return String.valueOf(((BuildArena) pluginArena).getRound());
+
+                        }
+
+                        return null;
+
+                    }
+
+                });
+        placeholderManager.registerPlaceholder(
+                new Placeholder("rounds", Placeholder.PlaceholderType.ARENA, Placeholder.PlaceholderExecutor.ALL)
+                {
+
+                    @Override
+                    public String getValue(Player player, IPluginArena arena) {
+
+                        return getRounds(arena);
+
+                    }
+
+                    @Override
+                    public String getValue(IPluginArena arena) {
+
+                        return getRounds(arena);
+
+                    }
+
+                    // Classic and Teams rounds; plots x rounds per plot in GTB.
+                    @Nullable
+                    private String getRounds(IPluginArena arena) {
+
+                        BaseArena pluginArena = arenaRegistry.getArena(arena.getId());
+                        if (pluginArena instanceof GuessArena) {
+
+                            return String.valueOf(pluginArena.getPlotList().size()
+                                    * pluginArena.getArenaOption("GTB_ROUNDS_PER_PLOT"));
+
+                        }
+
+                        if (pluginArena instanceof BuildArena) {
+
+                            return String.valueOf(((BuildArena) pluginArena).getRounds());
+
+                        }
+
+                        return null;
+
+                    }
+
+                });
 
     }
 
