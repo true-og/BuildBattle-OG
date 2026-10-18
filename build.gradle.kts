@@ -86,9 +86,9 @@ dependencies {
     // isEnableRelocation = true below they would be rewritten under plugily.projects.shadow.* and break at
     // runtime. compileOnly/compileOnlyApi stay off runtimeClasspath, so Shadow never bundles or relocates them.
     compileOnlyApi(project(":libs:Utilities-OG"))
-    compileOnly(project(":libs:Chat-OG")) {
-        attributes { attribute(kotlinAttribute, true) }
-    } // Import TrueOG Network Chat-OG Kotlin API (from source).
+    compileOnly(
+        files("libs/Chat-OG/Chat-OG.jar")
+    ) // Import Chat-OG API for world chat formatting (vendored jar until the API lands in true-og/Chat-OG).
     compileOnly(project(":libs:Scoreboard-OG")) // Import TrueOG Network Scoreboard-OG Java API (from source).
     implementation("plugily.projects:MiniGamesBox-Classic:1.4.5")
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.3") // Add JUnit API to testing environment.
