@@ -4,3 +4,12 @@
 [submodule "libs/MyWorlds"]
 	path = libs/MyWorlds
 	url = https://github.com/true-og/MyWorlds
+[submodule "libs/Chat-OG"]
+	path = libs/Chat-OG
+	url = https://github.com/true-og/Chat-OG
+[submodule "libs/Scoreboard-OG"]
+	path = libs/Scoreboard-OG
+	url = https://github.com/true-og/Scoreboard-OG
+[submodule "libs/Vanish-OG"]
+	path = libs/Vanish-OG
+	url = https://github.com/true-og/Vanish-OG

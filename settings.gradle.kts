@@ -1,26 +1,15 @@
 rootProject.name = "BuildBattle-OG"
 
-// Deliberately does NOT run bootstrap.sh: that would break source tarballs (no .git), break Windows
-// (no `sh`), and `git submodule update --force` on every build would discard in-tree submodule edits.
-// Fail with instructions instead, matching Splegg-OG.
-val requiredLibraries = listOf("MyWorlds", "Utilities-OG")
-val missingLibraries = requiredLibraries.filter { libraryName -> !file("libs/$libraryName/build.gradle.kts").exists() }
-
-if (missingLibraries.isNotEmpty()) {
-    throw GradleException(
-        "Missing initialized git submodules: ${missingLibraries.joinToString(", ")}. " +
-            "Run ./bootstrap.sh or `git submodule update --init --recursive` before building."
-    )
+// Fetch submodule content before the libraries below are wired in as subprojects.
+ProcessBuilder("sh", "bootstrap.sh").directory(rootDir).inheritIO().start().let {
+    if (it.waitFor() != 0) throw GradleException("bootstrap.sh failed")
 }
 
-// Only directories that carry their own build script become subprojects. This deliberately skips the
-// vendored jar directories (libs/BKCommonLib, libs/MyWorlds), which are consumed via compileOnly(files(...)).
+// Every git submodule under libs/ with a Gradle build becomes :libs:<name>, like Template-OG.
 file("libs")
     .listFiles()
-    ?.filter { directory ->
-        directory.isDirectory && !directory.name.startsWith(".") && file("${directory.path}/build.gradle.kts").exists()
-    }
-    ?.forEach { directory ->
-        include(":libs:${directory.name}")
-        project(":libs:${directory.name}").projectDir = directory
+    ?.filter { it.isDirectory && !it.name.startsWith(".") && file("${it.path}/build.gradle.kts").exists() }
+    ?.forEach { dir ->
+        include(":libs:${dir.name}")
+        project(":libs:${dir.name}").projectDir = dir
     }
