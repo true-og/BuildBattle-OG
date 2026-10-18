@@ -91,6 +91,8 @@ dependencies {
     ) // Import Chat-OG API for world chat formatting (vendored jar until the API lands in true-og/Chat-OG).
     compileOnly(project(":libs:Scoreboard-OG")) // Import TrueOG Network Scoreboard-OG Java API (from source).
     implementation("plugily.projects:MiniGamesBox-Classic:1.4.5")
+    implementation("org.slf4j:slf4j-api:2.0.17") // Bundle a relocated SLF4J API for shaded dependencies.
+    implementation("org.slf4j:slf4j-nop:2.0.17") // Provide a relocated no-op SLF4J backend to avoid provider warnings.
     testImplementation("org.junit.jupiter:junit-jupiter:5.13.3") // Add JUnit API to testing environment.
     // compileOnly/compileOnlyApi do not propagate to the test classpath, so restate what the tests need.
     testImplementation("org.purpurmc.purpur:purpur-api:1.19.4-R0.1-SNAPSHOT") // Adventure lives here.
@@ -131,7 +133,12 @@ tasks.shadowJar {
     relocate("com.zaxxer.hikari", "plugily.projects.buildbattle.database.hikari")
     relocate("plugily.projects.minigamesbox", "plugily.projects.buildbattle.minigamesbox")
     archiveClassifier.set("") // Use empty string instead of null.
-    minimize()
+    // Relocate the SLF4J provider registration with SLF4J itself; the other service files keep their current form.
+    mergeServiceFiles { setIncludes(listOf("META-INF/services/org.slf4j.spi.SLF4JServiceProvider")) }
+    minimize {
+        // SLF4J discovers providers through META-INF/services, so Shadow's static minimizer cannot see this usage.
+        exclude(dependency("org.slf4j:slf4j-nop:.*"))
+    }
 }
 
 tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.
