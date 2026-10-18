@@ -13,7 +13,6 @@ extra["kotlinAttribute"] = Attribute.of("kotlin-tag", Boolean::class.javaObjectT
 val kotlinAttribute: Attribute<Boolean> by rootProject.extra
 
 val bkCommonLibJar = files("libs/BKCommonLib/BKCommonLib-1.19.4-v2.jar")
-val myWorldsJar = files("libs/MyWorlds/MyWorlds-1.19.4-v1.jar")
 
 /* --------------------------- JDK / Kotlin ---------------------------- */
 java {
@@ -76,7 +75,7 @@ repositories {
 dependencies {
     compileOnly("org.purpurmc.purpur:purpur-api:1.19.4-R0.1-SNAPSHOT") // Declare Purpur API version to be packaged.
     compileOnly("org.jetbrains:annotations:23.0.0")
-    compileOnly(myWorldsJar)
+    compileOnly(project(":libs:MyWorlds")) // Import MyWorlds API (git submodule, built from source).
     compileOnly(bkCommonLibJar)
     compileOnly("net.citizensnpcs:citizensapi:2.0.26-SNAPSHOT") {
         exclude(group = "ch.ethz.globis.phtree", module = "phtree")

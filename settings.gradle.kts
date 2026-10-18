@@ -3,7 +3,7 @@ rootProject.name = "BuildBattle-OG"
 // Deliberately does NOT run bootstrap.sh: that would break source tarballs (no .git), break Windows
 // (no `sh`), and `git submodule update --force` on every build would discard in-tree submodule edits.
 // Fail with instructions instead, matching Splegg-OG.
-val requiredLibraries = listOf("Utilities-OG")
+val requiredLibraries = listOf("MyWorlds", "Utilities-OG")
 val missingLibraries = requiredLibraries.filter { libraryName -> !file("libs/$libraryName/build.gradle.kts").exists() }
 
 if (missingLibraries.isNotEmpty()) {
