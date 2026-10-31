@@ -8,7 +8,7 @@
 # BB1 ships fully configured for the open source TrueOG maps: "Plaza" (twelve 31x31 plots around a
 # central plaza, public domain) as the game world BB1-map and "BB1_Hub" (Green Leave Lobby by
 # Libers97, CC BY-SA 3.0) as the lobby world BB1-hub. Both live under maps/ in
-# https://github.com/true-og/true-og. Copy them to the server root under those names and register
+# https://git.trueog.net/trueog/true-og. Copy them to the server root under those names and register
 # them with MyWorlds; nothing here needs the setup GUI unless the worlds change.
 #
 # Plot cuboids are the plugin's authority on where players may build: the lowest layer of each cuboid
