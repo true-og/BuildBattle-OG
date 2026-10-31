@@ -50,7 +50,7 @@ The bundled `arenas.yml` ships arena `BB1` fully configured for the open source 
 bundled `config.yml` already protects `world`, `world_nether` and `world_the_end`. What is left is
 putting the two worlds in place:
 
-1. Fetch the maps from the [true-og repository](https://github.com/true-og/true-og) (`maps/`) and put
+1. Fetch the maps from the [true-og repository](https://git.trueog.net/trueog/true-og) (`maps/`) and put
    `Plaza` and `BB1_Hub` under `<server root>/maps/`, the same directory Splegg-OG and TheHerobrine-OG use
    (`MyWorlds.Map-Base` in `config.yml`). See [Bundled maps](#bundled-maps).
 2. Drop the jar in `plugins/` and start the server. On every boot the plugin copies each arena world from
@@ -74,7 +74,7 @@ signs in the hub so players can join without commands (see [Join Signs](#join-si
 
 ## Bundled maps
 
-Both maps are maintained in the [true-og repository](https://github.com/true-og/true-og) under `maps/`,
+Both maps are maintained in the [true-og repository](https://git.trueog.net/trueog/true-og) under `maps/`,
 which is also where the server keeps them (`MyWorlds.Map-Base`), and are the canonical worlds for the
 shipped `BB1` arena:
 
@@ -336,7 +336,7 @@ entries use `biomes.VIP` by default, configurable in `biomes.yml`.
 ## Building
 
 ```bash
-git clone --recursive https://github.com/true-og/BuildBattle-OG
+git clone --recursive https://git.trueog.net/trueog/BuildBattle-OG
 cd BuildBattle-OG
 ./gradlew build
 ```
@@ -360,7 +360,7 @@ Tigerpanzer_02, Plajer, TomTheDeveloper and contributors, distributed under the 
 
 The plot wall (`PlotBorderManager`) is derived from the border module of
 [EternalCombat](https://github.com/EternalCodeTeam/EternalCombat) by the EternalCode Team, by way of the
-TrueOG [Duels-OG](https://github.com/true-og/Duels-OG) adaptation. Both are licensed under the
+TrueOG [Duels-OG](https://git.trueog.net/trueog/Duels-OG) adaptation. Both are licensed under the
 [Apache License 2.0](https://github.com/EternalCodeTeam/EternalCombat/blob/master/LICENSE); the file keeps
 that notice and lists the changes made.
 
