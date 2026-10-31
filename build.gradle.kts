@@ -88,7 +88,7 @@ dependencies {
     compileOnlyApi(project(":libs:Utilities-OG"))
     compileOnly(
         files("libs/Chat-OG/Chat-OG.jar")
-    ) // Import Chat-OG API for world chat formatting (vendored jar until the API lands in true-og/Chat-OG).
+    ) // Import Chat-OG API for world chat formatting (vendored jar until the API lands in trueog/Chat-OG).
     compileOnly(project(":libs:Scoreboard-OG")) // Import TrueOG Network Scoreboard-OG Java API (from source).
     implementation("plugily.projects:MiniGamesBox-Classic:1.4.5")
     implementation("org.slf4j:slf4j-api:2.0.17") // Bundle a relocated SLF4J API for shaded dependencies.
